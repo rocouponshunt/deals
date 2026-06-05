@@ -311,19 +311,25 @@ let allIntervals = [];
 // ── Helpers ──────────────────────────────────────────────────────
 const fmt = n => Number(n||0).toLocaleString('en-IN');
 
-function getImages(deal) {
-  const order = deal.image_order || (deal.image_urls||[]).map((_,i)=>i);
-  const hidden = deal.hidden_images || [];
-  const urls = deal.image_urls || [];
-  return order.filter(i => !hidden.includes(i) && urls[i]).map(i => urls[i]);
+function parseArr(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'string') {
+    try { const p = JSON.parse(val); return Array.isArray(p) ? p : []; } catch(e) { return []; }
+  }
+  return [];
 }
 
-// Use a CORS image proxy so cross-origin product images (Shopify, D2C) actually load
-function proxyImg(url) {
-  if (!url) return '';
-  // Use images.weserv.nl as a free CORS proxy
-  return 'https://images.weserv.nl/?url=' + encodeURIComponent(url) + '&w=600&output=webp';
+function getImages(deal) {
+  const urls = parseArr(deal.image_urls);
+  const order = parseArr(deal.image_order);
+  const hidden = parseArr(deal.hidden_images);
+  const idx = order.length > 0 ? order : urls.map((_,i) => i);
+  return idx.filter(i => !hidden.includes(i) && urls[i]).map(i => urls[i]);
 }
+
+// No proxy needed — <img> tags load cross-origin images natively in browsers
+function proxyImg(url) { return url || ''; }
 
 // Random "viewing" count per deal — seeded by deal id so stable per session
 function viewingCount(dealId) {
@@ -353,7 +359,13 @@ async function fetchDeals() {
   const res = await fetch(EDGE_LIVE);
   const data = await res.json();
   GLOBAL_TIMER = data.global_timer_hours || 12;
-  ALL_DEALS = data.deals || [];
+  // Normalise every deal's array fields — Supabase TEXT[] can come back as JSON strings
+  ALL_DEALS = (data.deals || []).map(d => ({
+    ...d,
+    image_urls:    parseArr(d.image_urls),
+    image_order:   parseArr(d.image_order),
+    hidden_images: parseArr(d.hidden_images),
+  }));
 }
 
 // ── Filters ───────────────────────────────────────────────────────
