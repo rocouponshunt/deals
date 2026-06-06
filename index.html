@@ -213,7 +213,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .wf-r.tot .wv{color:var(--accent);font-size:14px}
 .wf-r.sv{color:var(--green);font-size:11px}
 
-/* Loader */
+/* B1 user type tabs */
+.user-tabs{display:flex;gap:0;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:4px}
+.user-tab{flex:1;background:none;border:none;padding:11px 14px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;text-align:center;line-height:1.3}
+.user-tab.active{background:var(--accent);color:#fff}
+.user-tab:hover:not(.active){background:var(--accent-light);color:var(--accent)}
+
+/* Similar deals */
+.similar-section{margin-top:48px}
+.similar-title{font-family:var(--font);font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+@media(max-width:600px){.similar-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
 #loader{position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #loader-logo{font-family:var(--font);font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--text)}
 #loader-logo span{color:var(--accent)}
@@ -253,18 +263,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
         <input id="search" type="text" placeholder="Search deals, brands, categories...">
         <div id="search-suggestions"></div>
       </div>
-      <div id="nav-count"></div>
     </div>
   </nav>
   <div id="filters">
     <div id="filters-inner">
       <button class="cat-pill active" data-cat="all">All Deals</button>
       <div class="filter-sep"></div>
-      <select class="filter-select" id="sort-select">
-        <option value="discount">Best Discount</option>
-        <option value="price_asc">Lowest Price</option>
-        <option value="price_desc">Highest Price</option>
-        <option value="newest">Newest</option>
+      <select class="filter-select" id="sort-select" title="Sort deals">
+        <option value="discount">🔥 Biggest Discount First</option>
+        <option value="price_asc">💰 Lowest Price First</option>
+        <option value="price_desc">⬆ Highest Price First</option>
+        <option value="newest">🆕 Newest Deals First</option>
       </select>
       <div class="price-filter">
         <span class="price-label">₹</span>
@@ -301,6 +310,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
 let ALL_DEALS = [];
 let GLOBAL_TIMER = 12;
+let IMAGE_ROTATION_MS = 2000;
 let activeCategory = 'all';
 let activeRetailer = '';
 let activeSort = 'discount';
@@ -359,7 +369,7 @@ async function fetchDeals() {
   const res = await fetch(EDGE_LIVE);
   const data = await res.json();
   GLOBAL_TIMER = data.global_timer_hours || 12;
-  // Normalise every deal's array fields — Supabase TEXT[] can come back as JSON strings
+  IMAGE_ROTATION_MS = data.image_rotation_ms || 2000;
   ALL_DEALS = (data.deals || []).map(d => ({
     ...d,
     image_urls:    parseArr(d.image_urls),
@@ -383,7 +393,6 @@ function buildFilters() {
   const retailers = [...new Set(ALL_DEALS.map(d=>d.report_storename).filter(Boolean))].sort();
   const sel = document.getElementById('retailer-select');
   retailers.forEach(r => { const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); });
-  document.getElementById('nav-count').textContent = ALL_DEALS.length + ' deals';
 }
 
 function setCat(cat) {
@@ -481,12 +490,8 @@ function makeCard(deal) {
     const iv = setInterval(() => {
       if (hovered || !imgEl || !document.contains(imgEl)) return;
       imgEl.classList.add('fade');
-      setTimeout(() => {
-        idx = (idx+1) % imgs.length;
-        imgEl.src = proxyImg(imgs[idx]);
-        imgEl.classList.remove('fade');
-      }, 300);
-    }, 2000);
+      setTimeout(() => { idx = (idx+1) % imgs.length; imgEl.src = proxyImg(imgs[idx]); imgEl.classList.remove('fade'); }, 300);
+    }, IMAGE_ROTATION_MS);
     allIntervals.push(iv);
   }
 
@@ -577,106 +582,91 @@ function renderDetail(deal) {
   allIntervals.forEach(clearInterval); allIntervals=[];
   const imgs = getImages(deal);
   const store = deal.ck_admin_stores || deal;
-  const rates = deal.retailer_rates || [];
-  const disc = Math.round(deal.discount_percent||0);
-  const cb = store.cashback||0;
+  const rates = parseArr(deal.retailer_rates);
+  const cb = deal.cashback_override || store.cashback || 0;
   const cbType = store.cashback_type==='percent' ? '%' : '₹';
   const isRewards = store.store_type==='Rewards';
-  const cbDisplay = cbType==='%' ? `${cb}%` : `₹${cb}`;
   const vc = viewingCount(deal.id);
+  const isB1 = (store.groupid||'')==='B1';
+  const existingRate = rates.find(r=>(r.rate_label||'').toLowerCase().includes('exist'));
+  const existingCb = deal.b1_existing_cashback || existingRate?.cashback || null;
 
-  // ── Gallery ──
-  let imgIdx = 0;
-  let autoRotate;
-  let galleryHovered = false;
-  const galleryEl = document.getElementById('gallery');
-  galleryEl.innerHTML = `
+  // Gallery
+  let imgIdx=0, autoRotate, galleryHovered=false;
+  const galleryEl=document.getElementById('gallery');
+  galleryEl.innerHTML=`
     <div class="gallery-main" id="gmain">
-      ${imgs[0]
-        ? `<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`
-        : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
+      ${imgs[0]?`<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
       <div class="gallery-count" id="gcount">${imgs.length>1?'1/'+imgs.length:''}</div>
     </div>
     <div class="gallery-thumbs" id="gthumbs">
       ${imgs.map((url,i)=>`<img class="gallery-thumb${i===0?' active':''}" src="${proxyImg(url)}" data-idx="${i}" loading="lazy" onerror="this.style.display='none'">`).join('')}
     </div>`;
+  function goImg(i){imgIdx=i;const g=document.getElementById('gimg');if(g){g.classList.add('fade');setTimeout(()=>{g.src=proxyImg(imgs[i]);g.classList.remove('fade');},250);}document.getElementById('gcount').textContent=imgs.length>1?(i+1)+'/'+imgs.length:'';document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.toggle('active',+t.dataset.idx===i));}
+  document.getElementById('gthumbs').onclick=e=>{const t=e.target.closest('.gallery-thumb');if(t){clearInterval(autoRotate);goImg(+t.dataset.idx);}};
+  document.getElementById('gmain').addEventListener('mouseenter',()=>galleryHovered=true);
+  document.getElementById('gmain').addEventListener('mouseleave',()=>galleryHovered=false);
+  if(imgs.length>1){autoRotate=setInterval(()=>{if(!galleryHovered)goImg((imgIdx+1)%imgs.length);},IMAGE_ROTATION_MS);allIntervals.push(autoRotate);}
 
-  function goImg(i) {
-    imgIdx = i;
-    const gimg = document.getElementById('gimg');
-    if (gimg) { gimg.classList.add('fade'); setTimeout(()=>{ gimg.src=proxyImg(imgs[i]); gimg.classList.remove('fade'); },250); }
-    document.getElementById('gcount').textContent = imgs.length>1?(i+1)+'/'+imgs.length:'';
-    document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.toggle('active',+t.dataset.idx===i));
+  // Waterfall calc
+  function calcWf(cbVal) {
+    const cd=deal.coupon_type==='percent'?(deal.discounted_price*(deal.coupon_discount/100)):(deal.coupon_discount||0);
+    const ac=deal.discounted_price-cd;
+    const pdAmt=deal.prepaid_type_override==='percent'?ac*((deal.prepaid_discount_override||0)/100):(deal.prepaid_discount_override||0);
+    const ap=ac-pdAmt;
+    const sf=deal.shipping_fee_override??store.shipping_fee??0;
+    const rule=deal.shipping_rule_override??store.shipping_rule??'yes';
+    const cbBase=rule==='yes'?ap+sf:ap;
+    const cbAmt=cbType==='%'?cbBase*(cbVal/100):cbVal;
+    const pAfterCb=cbBase-cbAmt;
+    const final=Math.round(rule==='no'?pAfterCb+sf:pAfterCb);
+    const discPct=deal.mrp>0?Math.round((deal.mrp-final)/deal.mrp*100):0;
+    return{cd,ac,pdAmt,ap,sf,rule,cbBase,cbAmt,final,discPct,cbVal};
   }
-  document.getElementById('gthumbs').onclick = e => {
-    const t = e.target.closest('.gallery-thumb');
-    if (t) { clearInterval(autoRotate); goImg(+t.dataset.idx); }
-  };
-  document.getElementById('gmain').addEventListener('mouseenter', ()=>galleryHovered=true);
-  document.getElementById('gmain').addEventListener('mouseleave', ()=>galleryHovered=false);
-  if (imgs.length>1) {
-    autoRotate = setInterval(() => { if (!galleryHovered) goImg((imgIdx+1)%imgs.length); }, 2000);
-    allIntervals.push(autoRotate);
+  function buildWfRows(w){
+    let r=`<div class="wf-r s"><span>MRP</span><span class="wv">₹${fmt(deal.mrp)}</span></div><div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
+    if(w.cd>0)r+=`<div class="wf-r d"><span>Coupon (${deal.coupon_code||''})</span><span class="wv">−₹${fmt(w.cd)}</span></div>`;
+    if(w.pdAmt>0)r+=`<div class="wf-r d"><span>Prepaid discount</span><span class="wv">−₹${fmt(w.pdAmt)}</span></div>`;
+    if(w.sf>0)r+=`<div class="wf-r a"><span>+ Shipping</span><span class="wv">₹${fmt(w.sf)}</span></div>`;
+    r+=`<div class="wf-r d"><span>CashKaro ${w.cbVal}${cbType} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price</span><span class="wv">₹${fmt(w.final)}</span></div><div class="wf-r sv"><span>🎉 You save ${w.discPct}% vs MRP</span></div>`;
+    return r;
   }
+  const wNew=calcWf(cb);
+  const wExisting=isB1&&existingCb!==null?calcWf(existingCb):null;
+  let wCurrent=wNew, cbCurrent=cb;
 
-  // ── Waterfall ──
-  const cd = deal.coupon_type==='percent' ? (deal.discounted_price*(deal.coupon_discount/100)) : (deal.coupon_discount||0);
-  const ac = deal.discounted_price - cd;
-  const pdAmt = deal.prepaid_type_override==='percent' ? ac*((deal.prepaid_discount_override||0)/100) : (deal.prepaid_discount_override||0);
-  const ap = ac - pdAmt;
-  const sf = deal.shipping_fee_override ?? store.shipping_fee ?? 0;
-  const rule = deal.shipping_rule_override ?? store.shipping_rule ?? 'yes';
-  const sub = ap + sf;
-  const cbBase = rule==='yes' ? sub : ap;
-  const cbAmt = cbType==='%' ? cbBase*(cb/100) : cb;
-  const pAfterCb = cbBase - cbAmt;
-  const final = rule==='no' ? pAfterCb+sf : pAfterCb;
+  // B1 tabs
+  const userTabsHtml=isB1&&wExisting?`<div class="user-tabs" id="user-tabs">
+    <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:11px;opacity:.8">₹${fmt(wNew.final)} final price</small></button>
+    <button class="user-tab" id="tab-eu" onclick="switchUserTab('existing')">🔄 Existing ${deal.report_storename} User<br><small style="font-size:11px;opacity:.8">₹${fmt(wExisting.final)} final price</small></button>
+  </div>`:'';
 
-  let wfRows = `<div class="wf-r s"><span>MRP</span><span class="wv">₹${fmt(deal.mrp)}</span></div>
-    <div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
-  if (cd>0) wfRows += `<div class="wf-r d"><span>Coupon (${deal.coupon_code||''})</span><span class="wv">−₹${fmt(cd)}</span></div><div class="wf-r"><span>After coupon</span><span class="wv">₹${fmt(ac)}</span></div>`;
-  if (pdAmt>0) wfRows += `<div class="wf-r d"><span>Prepaid discount</span><span class="wv">−₹${fmt(pdAmt)}</span></div><div class="wf-r"><span>After prepaid</span><span class="wv">₹${fmt(ap)}</span></div>`;
-  if (sf>0) wfRows += `<div class="wf-r a"><span>+ Shipping</span><span class="wv">₹${fmt(sf)}</span></div>`;
-  wfRows += `<div class="wf-r d"><span>CashKaro ${cbDisplay} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(cbAmt)}</span></div>
-    <hr class="wf-hr">
-    <div class="wf-r tot"><span>Final deal price</span><span class="wv">₹${fmt(final)}</span></div>
-    <div class="wf-r sv"><span>🎉 You save ${disc}% vs MRP</span></div>`;
+  let ratesHtml='';
+  if(rates.length)ratesHtml=`<div style="margin-bottom:8px;font-size:12px;color:var(--text3);font-weight:600">Multiple cashback rates:</div><table class="rates-table"><thead><tr><th>User type</th><th>Cashback</th></tr></thead><tbody>${rates.map(r=>`<tr><td>${r.rate_label}</td><td>${r.cashback}${r.cashback_type==='percent'?'%':'₹'}</td></tr>`).join('')}</tbody></table>`;
+  const tc=(store.cashback_tc||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'');
 
-  // ── Rates table ──
-  let ratesHtml = '';
-  if (rates.length) ratesHtml = `<div style="margin-bottom:8px;font-size:12px;color:var(--text3);font-weight:600">Multiple cashback rates for ${deal.report_storename}:</div>
-    <table class="rates-table"><thead><tr><th>User type</th><th>Cashback</th></tr></thead><tbody>
-    ${rates.map(r=>`<tr><td>${r.rate_label}</td><td>${r.cashback}${r.cashback_type==='percent'?'%':'₹'}</td></tr>`).join('')}
-    </tbody></table>`;
-
-  const tc = (store.cashback_tc||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'');
-
-  document.getElementById('detail-info').innerHTML = `
+  document.getElementById('detail-info').innerHTML=`
     <div class="detail-retailer-row">
       <span class="detail-retailer">${deal.report_storename||''}</span>
       <span class="detail-cat-badge">${deal.category||''}</span>
       <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${store.store_type||'Cashback'}</span>
     </div>
     <div class="detail-name">${deal.product_name||''}</div>
-    <div>
-      <div class="detail-viewing"><span class="detail-viewing-dot"></span>${vc} people viewing right now</div>
-    </div>
+    <div><div class="detail-viewing"><span class="detail-viewing-dot"></span>${vc} people viewing right now</div></div>
+    ${userTabsHtml}
     <div class="detail-price-block">
       <div class="detail-price-row">
         <span class="detail-mrp">₹${fmt(deal.mrp)}</span>
-        <span class="detail-price">₹${fmt(final)}</span>
-        ${disc>0?`<span class="detail-discount-badge">${disc}% OFF</span>`:''}
+        <span class="detail-price" id="dp-final">₹${fmt(wNew.final)}</span>
+        <span class="detail-discount-badge" id="dp-disc">${wNew.discPct}% OFF</span>
       </div>
       <div class="detail-timer">
-        <span class="detail-timer-icon">⏱</span>
-        <span class="detail-timer-label">Deal ends in</span>
+        <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
         <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
       </div>
-      <div class="detail-cashback-line" style="margin-top:12px">Earn <strong>${cbDisplay} ${isRewards?'Rewards':'Cashback'}</strong> on this purchase via CashKaro</div>
+      <div class="detail-cashback-line" style="margin-top:12px">Earn <strong id="dp-cb-val">${cb}${cbType} ${isRewards?'Rewards':'Cashback'}</strong> on this purchase via CashKaro</div>
     </div>
-    <a class="cta-btn" href="${store.linkurl||'#'}" target="_blank" rel="noopener">
-      🛍 Shop Now &amp; Earn ${cbDisplay} ${isRewards?'Rewards':'Cashback'}
-    </a>
+    <a class="cta-btn" href="${store.linkurl||'#'}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${isRewards?'Rewards':'Cashback'}</a>
     <div class="cta-sub">Cashback tracked via CashKaro. Must shop through this link.</div>
     <div class="tabs-wrap">
       <div class="tab-list">
@@ -690,27 +680,39 @@ function renderDetail(deal) {
           <div class="info-chip"><span class="info-chip-label">Tracking speed</span><span class="info-chip-val">${store.tracking_speed||'—'}</span></div>
           <div class="info-chip"><span class="info-chip-label">Confirmation in</span><span class="info-chip-val">${store.expected_confirmation_days||'—'} days</span></div>
           <div class="info-chip"><span class="info-chip-label">Type</span><span class="info-chip-val">${store.store_type||'Cashback'}</span></div>
-        </div>
-        ${ratesHtml}
+        </div>${ratesHtml}
       </div>
       <div class="tab-content" id="tab-terms">${tc||'<span style="color:var(--text3)">Standard CashKaro T&Cs apply.</span>'}</div>
     </div>
     <div>
-      <div class="wf-toggle" onclick="toggleWf(this)">
-        <span>💡 How is this price calculated?</span><span>▾</span>
-      </div>
-      <div class="wf-body" id="wf-body">${wfRows}</div>
+      <div class="wf-toggle" onclick="toggleWf(this)"><span>💡 How is this price calculated?</span><span>▾</span></div>
+      <div class="wf-body" id="wf-body">${buildWfRows(wNew)}</div>
     </div>`;
 
-  // Ticking timer on detail
-  const updateDetailTimer = () => {
-    const el = document.getElementById('detail-timer-val');
-    if (el) el.textContent = getTimeLeft(deal.timer_hours, true);
-    else clearInterval(dtInt);
+  window.switchUserTab=(type)=>{
+    document.getElementById('tab-nu')?.classList.toggle('active',type==='new');
+    document.getElementById('tab-eu')?.classList.toggle('active',type==='existing');
+    const w=type==='existing'&&wExisting?wExisting:wNew;
+    const cbV=type==='existing'&&existingCb!==null?existingCb:cb;
+    document.getElementById('dp-final').textContent='₹'+fmt(w.final);
+    document.getElementById('dp-disc').textContent=w.discPct+'% OFF';
+    document.getElementById('dp-cb-val').textContent=cbV+cbType+' '+(isRewards?'Rewards':'Cashback');
+    document.getElementById('wf-body').innerHTML=buildWfRows(w);
   };
-  updateDetailTimer();
-  const dtInt = setInterval(updateDetailTimer, 1000);
-  allIntervals.push(dtInt);
+
+  const updTimer=()=>{const el=document.getElementById('detail-timer-val');if(el)el.textContent=getTimeLeft(deal.timer_hours,true);else clearInterval(dtInt);};
+  updTimer(); const dtInt=setInterval(updTimer,1000); allIntervals.push(dtInt);
+
+  // Similar deals
+  const detailInner=document.getElementById('detail-inner');
+  detailInner.querySelector('.similar-section')?.remove();
+  const similar=ALL_DEALS.filter(d=>d.id!==deal.id&&d.category===deal.category).slice(0,6);
+  if(similar.length>0){
+    const sec=document.createElement('div'); sec.className='similar-section';
+    sec.innerHTML=`<div class="similar-title"><span style="display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px"></span>Deals you may like</div><div class="similar-grid" id="sim-grid"></div>`;
+    detailInner.appendChild(sec);
+    similar.forEach(d=>sec.querySelector('#sim-grid').appendChild(makeCard(d)));
+  }
 }
 
 function switchTab(btn, tabId) {
