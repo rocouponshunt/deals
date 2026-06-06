@@ -144,9 +144,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .gallery-main img{width:100%;height:100%;object-fit:contain;padding:18px;transition:opacity .3s}
 .gallery-main img.fade{opacity:0}
 .gallery-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--mono)}
-.gallery-thumbs{display:flex;gap:7px;flex-wrap:wrap}
-.gallery-thumb{width:60px;height:60px;object-fit:contain;padding:4px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:all .15s;background:#fff;box-shadow:var(--shadow)}
+/* Gallery thumbs — no overflow, contained */
+.gallery-thumbs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:10px}
+.gallery-thumbs::-webkit-scrollbar{display:none}
+.gallery-thumb{width:60px;height:60px;flex-shrink:0;object-fit:contain;padding:4px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:all .15s;background:#fff;box-shadow:var(--shadow)}
 .gallery-thumb.active{border-color:var(--accent)}
+
+/* Floating CTA — mobile only */
+#floating-cta{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;padding:12px 16px;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.1)}
+#floating-cta .cta-btn{margin:0;border-radius:12px;padding:14px}
+@media(max-width:900px){
+  #floating-cta{display:block}
+  /* Add bottom padding to detail page so floating CTA doesn't cover content */
+  #detail-inner{padding-bottom:90px}
+  /* Hide the inline CTA on mobile — floating one replaces it */
+  .inline-cta-wrap{display:none}
+}
 .detail-info{display:flex;flex-direction:column;gap:18px}
 .detail-retailer-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .detail-retailer{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);font-weight:600}
@@ -332,6 +345,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
       <a href="#" onclick="showListing();return false" style="font-family:var(--font);font-size:18px;font-weight:800;text-decoration:none;color:var(--text)">Deals<span style="color:var(--accent)">Hub</span></a>
     </div>
   </div>
+  <!-- Floating CTA — shown on mobile, updates with B1 tab switches -->
+  <div id="floating-cta">
+    <a id="floating-cta-btn" class="cta-btn" href="#" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn Cashback</a>
+  </div>
   <div id="detail-inner">
     <div class="detail-grid">
       <div id="gallery" class="gallery"></div>
@@ -343,6 +360,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 <script>
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
 let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
+let TRACKING_TEMPLATE = '{linkurl}&source=TEST{random10}&p5={userid}&url={product_url}';
+const FIXED_USER_ID = '17861557';
+
+function buildTrackingUrl(linkurl, productUrl) {
+  const random10 = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+  return TRACKING_TEMPLATE
+    .replace('{linkurl}', linkurl || '#')
+    .replace('{random10}', random10)
+    .replace('{userid}', FIXED_USER_ID)
+    .replace('{product_url}', encodeURIComponent(productUrl || ''));
+}
 let activeCat = 'all', activeSort = 'order', activeRetailer = '';
 let selectedBrands = new Set();
 let priceMin = null, priceMax = null, searchQuery = '';
@@ -383,9 +411,10 @@ async function fetchDeals() {
   GLOBAL_TIMER = data.global_timer_hours || 12;
   IMAGE_ROTATION_MS = data.image_rotation_ms || 2000;
   CATEGORY_ORDER = data.category_order || [];
-  // Mobile grid columns — default 2, admin-configurable
   const mobileCols = parseInt(data.mobile_grid_cols) || 2;
   document.documentElement.style.setProperty('--mobile-cols', mobileCols);
+  // Tracking URL template from config
+  if (data.tracking_template) TRACKING_TEMPLATE = data.tracking_template;
   ALL_DEALS = (data.deals||[])
     .filter(d => d.status === 'live' && d.hidden !== true)
     .map(d => ({
@@ -617,6 +646,7 @@ function showDetail(dealId) {
 function showListing() {
   window.location.hash='';
   allIntervals.forEach(clearInterval); allIntervals=[];
+  document.getElementById('floating-cta').style.display='none';
   document.getElementById('detail-page').style.display='none';
   document.getElementById('listing-page').style.display='block';
 }
@@ -731,6 +761,12 @@ function renderDetail(deal) {
   const dealUrl = `${window.location.origin}${window.location.pathname}#deal/${deal.id}`;
   const waMsg = encodeURIComponent(`🔥 Get ${deal.product_name} for just ₹${fmt(finalRounded)} (MRP ₹${fmt(mrpRounded)}) — ${disc}% off + ${cb}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`);
 
+  // Build tracking URL
+  const trackingUrl = buildTrackingUrl(store.linkurl, deal.product_url);
+  const trackingUrlExisting = isB1 && existingCb !== null
+    ? buildTrackingUrl(store.linkurl, deal.product_url)
+    : trackingUrl;
+
   document.getElementById('detail-info').innerHTML = `
     <div class="detail-retailer-row">
       <span class="detail-retailer">${deal.report_storename||''}</span>
@@ -753,12 +789,14 @@ function renderDetail(deal) {
       </div>
       <div class="detail-cashback-line" style="margin-top:10px">Earn <strong id="dp-cb-val">${cb}${cbType} ${cbWord}</strong> on this purchase via CashKaro</div>
     </div>
-    <a class="cta-btn" href="${store.linkurl||'#'}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${cbWord}</a>
-    <a class="share-btn" href="https://wa.me/?text=${waMsg}" target="_blank" rel="noopener">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Share on WhatsApp
-    </a>
-    <div class="cta-sub">Cashback tracked via CashKaro. Must shop through this link.</div>
+    <div class="inline-cta-wrap">
+      <a id="inline-cta-btn" class="cta-btn" href="${trackingUrl}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${cbWord}</a>
+      <a class="share-btn" href="https://wa.me/?text=${waMsg}" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Share on WhatsApp
+      </a>
+      <div class="cta-sub">Cashback tracked via CashKaro. Must shop through this link.</div>
+    </div>
     <div class="tabs-wrap">
       <div class="tab-list">
         <button class="tab-btn active" onclick="switchTab(this,'about')">About</button>
@@ -793,15 +831,41 @@ function renderDetail(deal) {
       <div class="wf-body" id="wf-body">${buildWfRows(wNew)}</div>
     </div>`;
 
+  // Set floating CTA initial state
+  const floatingBtn = document.getElementById('floating-cta-btn');
+  if (floatingBtn) {
+    floatingBtn.href = trackingUrl;
+    floatingBtn.textContent = `🛍 Shop Now & Earn ${cb}${cbType} ${cbWord}`;
+  }
+
   window.switchUserTab = (type) => {
-    document.getElementById('tab-nu')?.classList.toggle('active',type==='new');
-    document.getElementById('tab-eu')?.classList.toggle('active',type==='existing');
-    const w=type==='existing'&&wExisting?wExisting:wNew;
-    const cbV=type==='existing'&&existingCb!==null?existingCb:cb;
-    document.getElementById('dp-final').textContent='₹'+fmt(Math.round(w.final));
-    document.getElementById('dp-disc').textContent=w.discPct+'% OFF';
-    document.getElementById('dp-cb-val').textContent=cbV+cbType+' '+cbWord;
-    document.getElementById('wf-body').innerHTML=buildWfRows(w);
+    document.getElementById('tab-nu')?.classList.toggle('active', type==='new');
+    document.getElementById('tab-eu')?.classList.toggle('active', type==='existing');
+    const w = type==='existing' && wExisting ? wExisting : wNew;
+    const cbV = type==='existing' && existingCb!==null ? existingCb : cb;
+    const newTrackUrl = buildTrackingUrl(store.linkurl, deal.product_url);
+    const ctaText = `🛍 Shop Now & Earn ${cbV}${cbType} ${cbWord}`;
+
+    // Update all price displays
+    document.getElementById('dp-final').textContent = '₹'+fmt(Math.round(w.final));
+    document.getElementById('dp-disc').textContent = w.discPct+'% OFF';
+    document.getElementById('dp-cb-val').textContent = cbV+cbType+' '+cbWord;
+    document.getElementById('wf-body').innerHTML = buildWfRows(w);
+
+    // Update inline CTA
+    const inlineBtn = document.getElementById('inline-cta-btn');
+    if (inlineBtn) { inlineBtn.href = newTrackUrl; inlineBtn.textContent = ctaText; }
+
+    // Update floating CTA
+    const floatBtn = document.getElementById('floating-cta-btn');
+    if (floatBtn) { floatBtn.href = newTrackUrl; floatBtn.textContent = ctaText; }
+
+    // Update WA share
+    const finalP = Math.round(w.final);
+    const newWaMsg = encodeURIComponent(`🔥 Get ${deal.product_name} for just ₹${fmt(finalP)} (MRP ₹${fmt(mrpRounded)}) — ${w.discPct}% off + ${cbV}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`);
+    document.querySelectorAll('.share-btn').forEach(b => {
+      b.href = `https://wa.me/?text=${newWaMsg}`;
+    });
   };
 
   const updTimer=()=>{const el=document.getElementById('detail-timer-val');if(el)el.textContent=getTimeLeft(deal.timer_hours,true);else clearInterval(dtInt);};
