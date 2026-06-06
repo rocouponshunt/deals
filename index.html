@@ -144,11 +144,34 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .gallery-main img{width:100%;height:100%;object-fit:contain;padding:18px;transition:opacity .3s}
 .gallery-main img.fade{opacity:0}
 .gallery-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--mono)}
-/* Gallery thumbs — no overflow, contained */
-.gallery-thumbs{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:10px}
-.gallery-thumbs::-webkit-scrollbar{display:none}
-.gallery-thumb{width:60px;height:60px;flex-shrink:0;object-fit:contain;padding:4px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:all .15s;background:#fff;box-shadow:var(--shadow)}
-.gallery-thumb.active{border-color:var(--accent)}
+/* Category icon pills */
+.cat-icon-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);font-size:11px;font-weight:500}
+.cat-icon-pill .cat-emoji{font-size:14px}
+
+/* Gallery — vertical thumbs on mobile */
+.gallery-wrap{display:flex;gap:10px;align-items:flex-start}
+.gallery-thumbs-vertical{display:none;flex-direction:column;gap:6px;width:54px;flex-shrink:0}
+.gallery-thumbs-vertical .gallery-thumb{width:50px;height:50px}
+.gallery-main-wrap{flex:1;min-width:0}
+/* Horizontal thumbs (desktop) */
+.gallery-thumbs-horizontal{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:10px}
+.gallery-thumbs-horizontal::-webkit-scrollbar{display:none}
+.gallery-thumbs-horizontal .gallery-thumb{width:58px;height:58px;flex-shrink:0}
+@media(max-width:768px){
+  .gallery-thumbs-vertical{display:flex}
+  .gallery-thumbs-horizontal{display:none}
+  .gallery-main img{padding:10px}
+}
+
+/* Viewing badge — on image */
+.gallery-viewing-badge{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px);z-index:2}
+.gallery-viewing-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.4s infinite;flex-shrink:0}
+
+/* Waterfall inside price block */
+.wf-inline-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:10px 0 0;font-size:12px;color:var(--accent);user-select:none;font-weight:600;border-top:1px solid var(--border);margin-top:10px}
+.wf-inline-toggle:hover{opacity:.8}
+.wf-inline-body{display:none;margin-top:8px;background:var(--bg3);border-radius:10px;padding:12px;font-size:12px;font-family:var(--mono)}
+.wf-inline-body.open{display:block}
 
 /* Floating CTA — mobile only */
 #floating-cta{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;padding:12px 16px;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(0,0,0,.1)}
@@ -362,6 +385,18 @@ const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-liv
 let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
 let TRACKING_TEMPLATE = '{linkurl}&source=TEST{random10}&p5={userid}&url={product_url}';
 const FIXED_USER_ID = '17861557';
+
+// Category emoji icons
+const CAT_ICONS = {
+  'Electronics':'📱','Fashion':'👗','Beauty':'💄','Home and Kitchen':'🏠',
+  'Healthcare and Wellness':'💊','Food and Grocery':'🛒','Sports':'⚽',
+  'Books':'📚','Toys':'🧸','Automotive':'🚗','Travel':'✈️',
+  'Services':'⚙️','Departmental':'🏪','Miscellaneous':'🎁'
+};
+function catIcon(cat){ return CAT_ICONS[cat]||'🏷️'; }
+function catIconPill(cat){
+  return `<span class="cat-icon-pill"><span class="cat-emoji">${catIcon(cat)}</span>${cat}</span>`;
+}
 
 function buildTrackingUrl(linkurl, productUrl) {
   const random10 = Math.floor(1000000000 + Math.random() * 9000000000).toString();
@@ -642,6 +677,11 @@ function showDetail(dealId) {
   renderDetail(deal);
   document.getElementById('listing-page').style.display='none';
   document.getElementById('detail-page').style.display='block';
+  // Explicitly show floating CTA on mobile — don't rely on CSS media query alone
+  const floatingCta = document.getElementById('floating-cta');
+  if (floatingCta && window.innerWidth <= 900) {
+    floatingCta.style.display = 'block';
+  }
 }
 function showListing() {
   window.location.hash='';
@@ -678,16 +718,21 @@ function renderDetail(deal) {
   const cbType = store.cashback_type==='percent' ? '%' : '₹';
   const existingCb = isB1 ? (deal.b1_existing_cashback ?? null) : null;
 
-  // Gallery
+  // Gallery — vertical thumbs on mobile, horizontal on desktop
   let imgIdx=0, autoRotate, galleryHovered=false;
   const galleryEl = document.getElementById('gallery');
+  const thumbsHtml = imgs.map((url,i)=>`<img class="gallery-thumb${i===0?' active':''}" src="${proxyImg(url)}" data-idx="${i}" loading="lazy" onerror="this.style.display='none'">`).join('');
   galleryEl.innerHTML = `
-    <div class="gallery-main" id="gmain">
-      ${imgs[0]?`<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
-      <div class="gallery-count" id="gcount">${imgs.length>1?'1/'+imgs.length:''}</div>
-    </div>
-    <div class="gallery-thumbs" id="gthumbs">
-      ${imgs.map((url,i)=>`<img class="gallery-thumb${i===0?' active':''}" src="${proxyImg(url)}" data-idx="${i}" loading="lazy" onerror="this.style.display='none'">`).join('')}
+    <div class="gallery-wrap">
+      <div class="gallery-thumbs-vertical" id="gthumbs-v">${thumbsHtml}</div>
+      <div class="gallery-main-wrap">
+        <div class="gallery-main" id="gmain">
+          ${imgs[0]?`<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
+          <div class="gallery-count" id="gcount">${imgs.length>1?'1/'+imgs.length:''}</div>
+          <div class="gallery-viewing-badge"><span class="gallery-viewing-dot"></span>${vc} viewing</div>
+        </div>
+        <div class="gallery-thumbs-horizontal" id="gthumbs-h">${thumbsHtml}</div>
+      </div>
     </div>`;
 
   function goImg(i) {
@@ -697,7 +742,13 @@ function renderDetail(deal) {
     document.getElementById('gcount').textContent=imgs.length>1?(i+1)+'/'+imgs.length:'';
     document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.toggle('active',+t.dataset.idx===i));
   }
-  document.getElementById('gthumbs').onclick=e=>{const t=e.target.closest('.gallery-thumb');if(t){clearInterval(autoRotate);goImg(+t.dataset.idx);}};
+  // Both thumb strips use the same handler
+  ['gthumbs-v','gthumbs-h'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', e=>{
+      const t=e.target.closest('.gallery-thumb');
+      if(t){clearInterval(autoRotate);goImg(+t.dataset.idx);}
+    });
+  });
   document.getElementById('gmain').addEventListener('mouseenter',()=>galleryHovered=true);
   document.getElementById('gmain').addEventListener('mouseleave',()=>galleryHovered=false);
   if(imgs.length>1){autoRotate=setInterval(()=>{if(!galleryHovered)goImg((imgIdx+1)%imgs.length);},IMAGE_ROTATION_MS);allIntervals.push(autoRotate);}
@@ -767,15 +818,15 @@ function renderDetail(deal) {
     ? buildTrackingUrl(store.linkurl, deal.product_url)
     : trackingUrl;
 
+
   document.getElementById('detail-info').innerHTML = `
     <div class="detail-retailer-row">
       <span class="detail-retailer">${deal.report_storename||''}</span>
-      <span class="detail-cat-badge">${deal.category||''}</span>
+      ${catIconPill(deal.category||'')}
       <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${storeType}</span>
       ${priceDrop?`<span style="background:#fef2f2;color:#e53e3e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid #fecaca">🔥 Price Dropped</span>`:''}
     </div>
     <div class="detail-name">${deal.product_name||''}</div>
-    <div><div class="detail-viewing"><span class="detail-viewing-dot"></span>${vc} people viewing right now</div></div>
     ${userTabsHtml}
     <div class="detail-price-block">
       <div class="detail-price-row">
@@ -787,7 +838,10 @@ function renderDetail(deal) {
         <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
         <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
       </div>
-      <div class="detail-cashback-line" style="margin-top:10px">Earn <strong id="dp-cb-val">${cb}${cbType} ${cbWord}</strong> on this purchase via CashKaro</div>
+      <div class="wf-inline-toggle" onclick="var b=this.nextElementSibling;b.classList.toggle('open');this.querySelector('.wf-arr').textContent=b.classList.contains('open')?'▴':'▾'">
+        <span>💡 How is this price calculated?</span><span class="wf-arr">▾</span>
+      </div>
+      <div class="wf-inline-body" id="wf-body">${buildWfRows(wNew)}</div>
     </div>
     <div class="inline-cta-wrap">
       <a id="inline-cta-btn" class="cta-btn" href="${trackingUrl}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${cbWord}</a>
@@ -825,10 +879,6 @@ function renderDetail(deal) {
         ${ratesHtml}
       </div>
       <div class="tab-content" id="tab-terms">${tc||'<span style="color:var(--text3)">Standard CashKaro T&Cs apply.</span>'}</div>
-    </div>
-    <div>
-      <div class="wf-toggle" onclick="toggleWf(this)"><span>💡 How is this price calculated?</span><span>▾</span></div>
-      <div class="wf-body" id="wf-body">${buildWfRows(wNew)}</div>
     </div>`;
 
   // Set floating CTA initial state
@@ -846,11 +896,17 @@ function renderDetail(deal) {
     const newTrackUrl = buildTrackingUrl(store.linkurl, deal.product_url);
     const ctaText = `🛍 Shop Now & Earn ${cbV}${cbType} ${cbWord}`;
 
-    // Update all price displays
+    // Update price displays
     document.getElementById('dp-final').textContent = '₹'+fmt(Math.round(w.final));
     document.getElementById('dp-disc').textContent = w.discPct+'% OFF';
-    document.getElementById('dp-cb-val').textContent = cbV+cbType+' '+cbWord;
+    // wf-body is now inside the price block (wf-inline-body)
     document.getElementById('wf-body').innerHTML = buildWfRows(w);
+
+    // Update B1 tab price labels
+    const nuTab = document.getElementById('tab-nu');
+    const euTab = document.getElementById('tab-eu');
+    if (nuTab) nuTab.querySelector('small').textContent = '₹'+fmt(Math.round(wNew.final));
+    if (euTab && wExisting) euTab.querySelector('small').textContent = '₹'+fmt(Math.round(wExisting.final));
 
     // Update inline CTA
     const inlineBtn = document.getElementById('inline-cta-btn');
@@ -863,9 +919,7 @@ function renderDetail(deal) {
     // Update WA share
     const finalP = Math.round(w.final);
     const newWaMsg = encodeURIComponent(`🔥 Get ${deal.product_name} for just ₹${fmt(finalP)} (MRP ₹${fmt(mrpRounded)}) — ${w.discPct}% off + ${cbV}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`);
-    document.querySelectorAll('.share-btn').forEach(b => {
-      b.href = `https://wa.me/?text=${newWaMsg}`;
-    });
+    document.querySelectorAll('.share-btn').forEach(b => { b.href = `https://wa.me/?text=${newWaMsg}`; });
   };
 
   const updTimer=()=>{const el=document.getElementById('detail-timer-val');if(el)el.textContent=getTimeLeft(deal.timer_hours,true);else clearInterval(dtInt);};
