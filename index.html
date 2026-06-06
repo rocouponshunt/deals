@@ -626,13 +626,27 @@ function renderDetail(deal) {
   const imgs = getImages(deal);
   const store = deal.ck_admin_stores || deal;
   const rates = parseArr(deal.retailer_rates);
-  const cb = deal.cashback_override || store.cashback || 0;
-  const cbType = store.cashback_type==='percent' ? '%' : '₹';
   const isRewards = store.store_type==='Rewards';
   const vc = viewingCount(deal.id);
-  const isB1 = (store.groupid||'')==='B1';
-  const existingRate = rates.find(r=>(r.rate_label||'').toLowerCase().includes('exist'));
-  const existingCb = deal.b1_existing_cashback || existingRate?.cashback || null;
+  const groupid = store.groupid || deal.groupid || 'A';
+  const isB1 = groupid === 'B1';
+
+  // Cashback resolution:
+  // B1: new user = deal.b1_new_cashback ?? deal.cashback_override ?? store.cashback
+  //     existing = deal.b1_existing_cashback
+  // Upto (non-A, non-B1): deal.cashback_override (confirmed rate) — never fall back to store default
+  // A: store.cashback (cascade applies)
+  let cb;
+  if (isB1) {
+    cb = deal.b1_new_cashback ?? deal.cashback_override ?? store.cashback ?? 0;
+  } else if (groupid !== 'A') {
+    // Upto — must use override, if null something went wrong, show 0 and note
+    cb = deal.cashback_override ?? 0;
+  } else {
+    cb = store.cashback ?? 0;
+  }
+  const cbType = store.cashback_type==='percent' ? '%' : '₹';
+  const existingCb = isB1 ? (deal.b1_existing_cashback ?? null) : null;
 
   // Gallery
   let imgIdx=0, autoRotate, galleryHovered=false;
