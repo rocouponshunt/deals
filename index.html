@@ -480,20 +480,8 @@ function makeCard(deal) {
       </div>
     </div>`;
 
-  // Rotating images — pause on hover
-  if (imgs.length > 1) {
-    let idx = 0;
-    let hovered = false;
-    const imgEl = card.querySelector('.card-img');
-    card.addEventListener('mouseenter', () => hovered = true);
-    card.addEventListener('mouseleave', () => hovered = false);
-    const iv = setInterval(() => {
-      if (hovered || !imgEl || !document.contains(imgEl)) return;
-      imgEl.classList.add('fade');
-      setTimeout(() => { idx = (idx+1) % imgs.length; imgEl.src = proxyImg(imgs[idx]); imgEl.classList.remove('fade'); }, 300);
-    }, IMAGE_ROTATION_MS);
-    allIntervals.push(iv);
-  }
+  // No rotation on grid cards — images only rotate on the deal detail page
+  // Just show first non-hidden image statically
 
   // Ticking seconds timer
   const timerEl = card.querySelector('.card-timer-text');
