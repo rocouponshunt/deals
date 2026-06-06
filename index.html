@@ -8,241 +8,241 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#f5f5f7;
-  --bg2:#ffffff;
-  --bg3:#f0f0f4;
-  --bg4:#e8e8ef;
-  --border:#e0e0ea;
-  --border2:#d0d0de;
-  --accent:#5c2be2;
-  --accent2:#7b52f0;
-  --accent-light:#ede8fc;
-  --orange:#ff6b2b;
-  --green:#00a86b;
-  --green-bg:#e6f7f1;
-  --red:#e53e3e;
-  --red-bg:#fef2f2;
-  --text:#111118;
-  --text2:#555566;
-  --text3:#9898aa;
-  --radius:16px;
-  --font:'Sora',sans-serif;
-  --body:'DM Sans',sans-serif;
-  --mono:'DM Mono',monospace;
-  --card-w:240px;
-  --shadow:0 2px 12px rgba(0,0,0,.07);
-  --shadow-hover:0 8px 32px rgba(92,43,226,.13);
+  --bg:#f5f5f7;--bg2:#fff;--bg3:#f0f0f4;--bg4:#e8e8ef;
+  --border:#e0e0ea;--border2:#d0d0de;
+  --accent:#5c2be2;--accent2:#7b52f0;--accent-light:#ede8fc;
+  --orange:#ff6b2b;--green:#00a86b;--green-bg:#e6f7f1;
+  --red:#e53e3e;--red-bg:#fef2f2;
+  --text:#111118;--text2:#555566;--text3:#9898aa;
+  --radius:16px;--font:'Sora',sans-serif;--body:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --card-w:220px;--sidebar-w:220px;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow-hover:0 8px 32px rgba(92,43,226,.13);
 }
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden}
 
-/* Nav */
-#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px}
-#nav-inner{max-width:1280px;margin:0 auto;height:64px;display:flex;align-items:center;gap:20px}
-#logo{font-family:var(--font);font-size:22px;font-weight:800;letter-spacing:-0.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
+/* ── NAV ── */
+#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px}
+#nav-inner{max-width:1400px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px}
+#logo{font-family:var(--font);font-size:21px;font-weight:800;letter-spacing:-.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
 #logo span{color:var(--accent)}
-#search-wrap{flex:1;max-width:480px;position:relative}
-#search{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:10px 16px 10px 42px;border-radius:12px;font-family:var(--body);font-size:14px;outline:none;transition:all .15s}
+#search-wrap{flex:1;max-width:460px;position:relative}
+#search{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:9px 14px 9px 40px;border-radius:11px;font-family:var(--body);font-size:14px;outline:none;transition:all .15s}
 #search:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(92,43,226,.08)}
 #search::placeholder{color:var(--text3)}
-#search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
-#search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;z-index:200;display:none;box-shadow:0 16px 40px rgba(0,0,0,.12)}
-.suggestion-item{display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
+#search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
+#search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:13px;overflow:hidden;z-index:200;display:none;box-shadow:0 16px 40px rgba(0,0,0,.12)}
+.suggestion-item{display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;transition:background .1s;border-bottom:1px solid var(--border)}
 .suggestion-item:last-child{border-bottom:none}
 .suggestion-item:hover{background:var(--bg3)}
-.sug-img-wrap{width:44px;height:44px;border-radius:8px;overflow:hidden;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sug-img-wrap{width:40px;height:40px;border-radius:7px;overflow:hidden;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .sug-img{width:100%;height:100%;object-fit:contain}
 .sug-info{flex:1;min-width:0}
 .sug-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sug-price{font-size:11px;color:var(--text2);margin-top:1px}
 .sug-badge{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0}
-#nav-count{font-size:12px;color:var(--text3);white-space:nowrap;flex-shrink:0}
 
-/* Filters */
-#filters{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:64px;z-index:90;padding:0 24px}
-#filters-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:12px;height:52px;overflow-x:auto;scrollbar-width:none}
-#filters-inner::-webkit-scrollbar{display:none}
-.cat-pill{flex-shrink:0;background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:5px 16px;border-radius:20px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap}
+/* ── TOP FILTER BAR ── */
+#topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:62px;z-index:90}
+#topbar-inner{max-width:1400px;margin:0 auto;height:48px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none}
+#topbar-inner::-webkit-scrollbar{display:none}
+.cat-pill{flex-shrink:0;background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:4px 14px;border-radius:20px;cursor:pointer;font-family:var(--body);font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap}
 .cat-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
-.filter-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
-.filter-select{background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:9px;font-family:var(--body);font-size:12px;cursor:pointer;outline:none;flex-shrink:0}
-.filter-select:focus{border-color:var(--accent)}
-.price-filter{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.price-input{width:80px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:5px 9px;border-radius:9px;font-family:var(--body);font-size:12px;outline:none}
+.filter-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.tb-select{background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:8px;font-family:var(--body);font-size:12px;cursor:pointer;outline:none;flex-shrink:0}
+.tb-select:focus{border-color:var(--accent)}
+.price-filter{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.price-input{width:76px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:4px 8px;border-radius:8px;font-family:var(--body);font-size:12px;outline:none}
 .price-input:focus{border-color:var(--accent)}
 .price-input::placeholder{color:var(--text3)}
 .price-label{font-size:12px;color:var(--text3)}
 
-/* Main */
-#main{max-width:1280px;margin:0 auto;padding:32px 24px 60px}
-.cat-section{margin-bottom:48px}
-.cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.cat-title{font-family:var(--font);font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px;color:var(--text)}
-.cat-title-accent{display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
-.cat-count{font-size:12px;color:var(--text3);font-weight:400}
+/* ── BODY LAYOUT: sidebar + grid ── */
+#page-body{max-width:1400px;margin:0 auto;padding:24px 20px 60px;display:flex;gap:24px;align-items:flex-start}
 
-/* Deal grid */
-.deal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:18px}
+/* ── LEFT SIDEBAR ── */
+#sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:124px;max-height:calc(100vh - 140px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.sidebar-section{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+.sidebar-title{font-family:var(--font);font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.sidebar-clear{font-size:11px;color:var(--accent);cursor:pointer;font-weight:500}
+.sidebar-search{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-family:var(--body);font-size:12px;outline:none;margin-bottom:8px;transition:border .15s}
+.sidebar-search:focus{border-color:var(--accent)}
+.sidebar-search::placeholder{color:var(--text3)}
+.brand-list{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto;scrollbar-width:thin}
+.brand-list::-webkit-scrollbar{width:3px}
+.brand-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.brand-item{display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;border-radius:7px;transition:background .1s}
+.brand-item:hover{background:var(--bg3)}
+.brand-cb{width:16px;height:16px;border:2px solid var(--border2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:pointer}
+.brand-cb.checked{background:var(--accent);border-color:var(--accent)}
+.brand-cb.checked::after{content:'✓';color:#fff;font-size:10px;font-weight:700;line-height:1}
+.brand-name{font-size:12px;color:var(--text2);flex:1}
+.brand-count{font-size:10px;color:var(--text3);background:var(--bg3);padding:1px 6px;border-radius:10px}
 
-/* Deal card */
+/* ── MAIN CONTENT AREA ── */
+#content-area{flex:1;min-width:0}
+#results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+#results-count{font-size:13px;color:var(--text2)}
+#results-count strong{color:var(--text);font-weight:600}
+
+/* Deal grid — flat, no category sections */
+.deal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px}
+
+/* ── DEAL CARD ── */
 .deal-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;display:flex;flex-direction:column;box-shadow:var(--shadow)}
-.deal-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:rgba(92,43,226,.2)}
-.deal-card.oos{opacity:.6}
-
-/* Card image */
+.deal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(92,43,226,.2)}
+.deal-card.oos{opacity:.55}
 .card-img-wrap{position:relative;aspect-ratio:1;background:var(--bg3);overflow:hidden}
-.card-img{width:100%;height:100%;object-fit:contain;padding:12px;transition:opacity .35s;background:#fff}
-.card-img.fade{opacity:0}
-.card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:44px;color:var(--text3);background:var(--bg3)}
-.card-discount-badge{position:absolute;top:10px;left:10px;background:var(--accent);color:#fff;font-family:var(--font);font-size:11px;font-weight:700;padding:4px 9px;border-radius:6px;z-index:2}
-.card-oos-overlay{position:absolute;inset:0;background:rgba(245,245,247,.8);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.5px}
-.card-viewing{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:4px;backdrop-filter:blur(4px)}
+.card-img{width:100%;height:100%;object-fit:contain;padding:10px;background:#fff}
+.card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text3);background:var(--bg3)}
+.card-discount-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:2}
+.card-oos-overlay{position:absolute;inset:0;background:rgba(245,245,247,.8);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2)}
+.card-viewing{position:absolute;bottom:7px;left:7px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:flex;align-items:center;gap:4px;backdrop-filter:blur(4px)}
 .card-viewing-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:blink 1.4s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* Card body */
-.card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px}
-.card-retailer{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
-.card-name{font-family:var(--font);font-size:14px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
-.card-prices{display:flex;align-items:baseline;gap:8px;margin-top:4px}
-.card-mrp{text-decoration:line-through;font-size:12px;color:var(--text3)}
-.card-price{font-family:var(--font);font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:10px;border-top:1px solid var(--border)}
-
-/* Urgent timer */
-.card-timer{display:flex;align-items:center;gap:5px;background:var(--red-bg);border:1px solid #fecaca;border-radius:6px;padding:3px 8px}
-.card-timer-icon{font-size:11px}
-.card-timer-text{font-size:11px;font-weight:700;color:var(--red);font-family:var(--mono)}
-
-.card-type-badge{font-size:10px;padding:3px 9px;border-radius:12px;font-weight:600}
+.card-body{padding:12px;flex:1;display:flex;flex-direction:column;gap:4px}
+.card-retailer{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.card-name{font-family:var(--font);font-size:13px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.card-prices{display:flex;align-items:baseline;gap:7px;margin-top:4px}
+.card-mrp{text-decoration:line-through;font-size:11px;color:var(--text3)}
+.card-price{font-family:var(--font);font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
+.card-timer{display:flex;align-items:center;gap:4px;background:var(--red-bg);border:1px solid #fecaca;border-radius:5px;padding:2px 7px}
+.card-timer-text{font-size:10px;font-weight:700;color:var(--red);font-family:var(--mono)}
+.card-type-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
 .badge-cashback{background:var(--green-bg);color:var(--green)}
 .badge-rewards{background:var(--accent-light);color:var(--accent)}
+.card-cat-tag{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);color:var(--text2);font-size:9px;font-weight:600;padding:2px 6px;border-radius:5px;border:1px solid var(--border)}
 
 /* Skeleton */
 .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .skel-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
 .skel-img{aspect-ratio:1;background:var(--bg3)}
-.skel-body{padding:14px;display:flex;flex-direction:column;gap:10px}
+.skel-body{padding:12px;display:flex;flex-direction:column;gap:8px}
 .skel-line{height:10px;border-radius:4px}
 
 /* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);grid-column:1/-1}
 .empty-icon{font-size:40px;margin-bottom:12px}
 .empty-title{font-family:var(--font);font-size:16px;color:var(--text2);margin-bottom:6px}
 
 /* ── DETAIL PAGE ── */
 #detail-page{display:none;min-height:100vh;background:var(--bg)}
-#detail-nav{background:rgba(255,255,255,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;position:sticky;top:0;z-index:100}
-#detail-nav-inner{max-width:1280px;margin:0 auto;height:64px;display:flex;align-items:center;gap:16px}
-#back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:#fff;padding:7px 14px;border-radius:9px;transition:all .15s;font-family:var(--body)}
+#detail-nav{background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100}
+#detail-nav-inner{max-width:1200px;margin:0 auto;height:62px;display:flex;align-items:center;gap:14px}
+#back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:#fff;padding:7px 13px;border-radius:9px;transition:all .15s;font-family:var(--body)}
 #back-btn:hover{border-color:var(--accent);color:var(--accent)}
-#detail-inner{max-width:1100px;margin:0 auto;padding:32px 24px 60px}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+#detail-inner{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
 @media(max-width:768px){.detail-grid{grid-template-columns:1fr}}
-
-/* Gallery */
-.gallery{position:sticky;top:80px}
-.gallery-main{aspect-ratio:1;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:12px;box-shadow:var(--shadow)}
-.gallery-main img{width:100%;height:100%;object-fit:contain;padding:20px;transition:opacity .3s}
+.gallery{position:sticky;top:76px}
+.gallery-main{aspect-ratio:1;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:10px;box-shadow:var(--shadow)}
+.gallery-main img{width:100%;height:100%;object-fit:contain;padding:18px;transition:opacity .3s}
 .gallery-main img.fade{opacity:0}
-.gallery-count{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:var(--mono)}
-.gallery-thumbs{display:flex;gap:8px;flex-wrap:wrap}
-.gallery-thumb{width:64px;height:64px;object-fit:contain;padding:4px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .15s;background:#fff;box-shadow:var(--shadow)}
+.gallery-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--mono)}
+.gallery-thumbs{display:flex;gap:7px;flex-wrap:wrap}
+.gallery-thumb{width:60px;height:60px;object-fit:contain;padding:4px;border-radius:9px;cursor:pointer;border:2px solid transparent;transition:all .15s;background:#fff;box-shadow:var(--shadow)}
 .gallery-thumb.active{border-color:var(--accent)}
-.gallery-thumb:hover{border-color:var(--border2)}
-
-/* Viewing badge on detail */
-.detail-viewing{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;color:var(--green)}
-.detail-viewing-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
-
-/* Detail info */
-.detail-info{display:flex;flex-direction:column;gap:20px}
+.detail-info{display:flex;flex-direction:column;gap:18px}
 .detail-retailer-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .detail-retailer{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);font-weight:600}
-.detail-cat-badge{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);font-weight:500}
-.detail-name{font-family:var(--font);font-size:26px;font-weight:800;line-height:1.3;letter-spacing:-0.4px;color:var(--text)}
-.detail-price-block{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}
-.detail-price-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
-.detail-mrp{text-decoration:line-through;color:var(--text3);font-size:16px}
-.detail-price{font-family:var(--font);font-size:38px;font-weight:800;color:var(--text);letter-spacing:-1.5px}
-.detail-discount-badge{background:var(--accent);color:#fff;padding:5px 12px;border-radius:8px;font-family:var(--font);font-size:14px;font-weight:700}
-
-/* Urgent timer detail */
-.detail-timer{display:inline-flex;align-items:center;gap:7px;background:var(--red-bg);border:1.5px solid #fecaca;border-radius:10px;padding:8px 14px;margin-top:4px}
-.detail-timer-icon{font-size:16px}
+.detail-cat-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);font-weight:500}
+.detail-name{font-family:var(--font);font-size:24px;font-weight:800;line-height:1.3;letter-spacing:-.4px;color:var(--text)}
+.detail-viewing{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;color:var(--green)}
+.detail-viewing-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+.detail-price-block{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.detail-price-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.detail-mrp{text-decoration:line-through;color:var(--text3);font-size:15px}
+.detail-price{font-family:var(--font);font-size:36px;font-weight:800;color:var(--text);letter-spacing:-1.5px}
+.detail-discount-badge{background:var(--accent);color:#fff;padding:4px 11px;border-radius:7px;font-family:var(--font);font-size:13px;font-weight:700}
+.detail-timer{display:inline-flex;align-items:center;gap:7px;background:var(--red-bg);border:1.5px solid #fecaca;border-radius:9px;padding:7px 13px;margin-top:4px}
+.detail-timer-icon{font-size:15px}
 .detail-timer-label{font-size:12px;color:var(--red);font-weight:500}
-.detail-timer-value{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--red)}
-
+.detail-timer-value{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)}
 .detail-cashback-line{font-size:14px;color:var(--text2);margin-top:4px}
 .detail-cashback-line strong{color:var(--green);font-weight:700}
-.cta-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;padding:17px;border-radius:13px;font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;letter-spacing:.1px;box-shadow:0 4px 16px rgba(92,43,226,.3)}
+.cta-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;padding:16px;border-radius:12px;font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;box-shadow:0 4px 16px rgba(92,43,226,.3)}
 .cta-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(92,43,226,.4)}
-.cta-sub{text-align:center;font-size:11px;color:var(--text3);margin-top:6px}
+.cta-sub{text-align:center;font-size:11px;color:var(--text3);margin-top:5px}
 
-/* Tabs */
-.tabs-wrap{background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+/* B1 tabs */
+.user-tabs{display:flex;background:var(--bg3);border:1.5px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:4px}
+.user-tab{flex:1;background:none;border:none;padding:10px 12px;cursor:pointer;font-family:var(--body);font-size:12px;font-weight:600;color:var(--text2);transition:all .15s;text-align:center;line-height:1.3}
+.user-tab.active{background:var(--accent);color:#fff}
+
+/* Tabs section */
+.tabs-wrap{background:#fff;border:1.5px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow)}
 .tab-list{display:flex;border-bottom:1px solid var(--border)}
-.tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:13px 10px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:600;transition:all .15s;margin-bottom:-1px}
+.tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);padding:12px 8px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:600;transition:all .15s;margin-bottom:-1px}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--accent-light)}
 .tab-btn:hover:not(.active){color:var(--text);background:var(--bg3)}
-.tab-content{padding:20px;display:none;font-size:14px;line-height:1.8;color:var(--text2)}
+.tab-content{padding:18px;display:none;font-size:14px;line-height:1.8;color:var(--text2)}
 .tab-content.active{display:block}
 .tab-content ul{padding-left:18px}
 .tab-content li{margin-bottom:6px}
-.info-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.info-chip{background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;gap:3px}
-.info-chip-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:600}
-.info-chip-val{font-family:var(--font);font-size:14px;font-weight:700;color:var(--text)}
+
+/* ── CASHBACK INFO CHIPS — centered, colored ── */
+.cb-chips{display:flex;gap:14px;justify-content:center;margin-bottom:12px}
+.cb-chip{flex:1;background:var(--accent-light);border:1.5px solid rgba(92,43,226,.15);border-radius:14px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;max-width:160px}
+.cb-chip-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);font-weight:700}
+.cb-chip-val{font-family:var(--font);font-size:28px;font-weight:800;color:var(--accent);line-height:1}
+.cb-chip-unit{font-size:12px;color:var(--text2);font-weight:500}
+.cb-chip.green{background:var(--green-bg);border-color:rgba(0,168,107,.15)}
+.cb-chip.green .cb-chip-label{color:var(--green)}
+.cb-chip.green .cb-chip-val{color:var(--green)}
+
 .rates-table{width:100%;border-collapse:collapse;font-size:13px}
 .rates-table th{text-align:left;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border);font-weight:600}
 .rates-table td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}
 
 /* Waterfall */
-.wf-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 0;font-size:13px;color:var(--text2);user-select:none;font-weight:500}
+.wf-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:13px 0;font-size:13px;color:var(--text2);user-select:none;font-weight:500}
 .wf-toggle:hover{color:var(--accent)}
-.wf-body{display:none;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:16px;font-size:12px;font-family:var(--mono)}
+.wf-body{display:none;background:var(--bg3);border:1.5px solid var(--border);border-radius:11px;padding:14px;font-size:12px;font-family:var(--mono)}
 .wf-body.open{display:block}
-.wf-r{display:flex;justify-content:space-between;padding:4px 0;color:var(--text2)}
+.wf-r{display:flex;justify-content:space-between;padding:3px 0;color:var(--text2)}
 .wf-r.s .wv{text-decoration:line-through;color:var(--text3)}
 .wf-r.d .wv{color:var(--green);font-weight:600}
 .wf-r.a .wv{color:var(--red)}
-.wf-hr{border:none;border-top:1.5px solid var(--border2);margin:10px 0}
+.wf-hr{border:none;border-top:1.5px solid var(--border2);margin:9px 0}
 .wf-r.tot{color:var(--text);font-weight:700}
 .wf-r.tot .wv{color:var(--accent);font-size:14px}
 .wf-r.sv{color:var(--green);font-size:11px}
 
-/* B1 user type tabs */
-.user-tabs{display:flex;gap:0;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:4px}
-.user-tab{flex:1;background:none;border:none;padding:11px 14px;cursor:pointer;font-family:var(--body);font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;text-align:center;line-height:1.3}
-.user-tab.active{background:var(--accent);color:#fff}
-.user-tab:hover:not(.active){background:var(--accent-light);color:var(--accent)}
-
 /* Similar deals */
-.similar-section{margin-top:48px}
-.similar-title{font-family:var(--font);font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-@media(max-width:600px){.similar-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+.similar-section{margin-top:44px}
+.similar-title{font-family:var(--font);font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.similar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+
+/* Loader */
 #loader{position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-#loader-logo{font-family:var(--font);font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--text)}
+#loader-logo{font-family:var(--font);font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text)}
 #loader-logo span{color:var(--accent)}
-.loader-bar{width:200px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.loader-bar{width:180px;height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
 .loader-fill{height:100%;background:var(--accent);border-radius:2px;animation:loadfill 1.2s ease-out forwards}
 @keyframes loadfill{from{width:0}to{width:100%}}
 .loader-text{font-size:12px;color:var(--text3)}
 
-@media(max-width:900px){:root{--card-w:180px}}
+/* Responsive */
+@media(max-width:1100px){:root{--sidebar-w:190px;--card-w:190px}}
+@media(max-width:900px){
+  #sidebar{display:none}
+  :root{--card-w:180px}
+}
 @media(max-width:600px){
-  :root{--card-w:155px}
-  #nav-inner{gap:10px}
-  #main{padding:20px 14px 60px}
+  :root{--card-w:calc(50vw - 18px)}
+  #page-body{padding:16px 12px 50px}
   .detail-name{font-size:20px}
   .detail-price{font-size:28px}
-  #detail-inner{padding:20px 14px 40px}
-  .detail-grid{gap:24px}
+  #detail-inner{padding:16px 12px 40px}
+  .detail-grid{gap:20px}
+  .cb-chips{gap:8px}
+  .cb-chip-val{font-size:22px}
 }
-@media(max-width:420px){:root{--card-w:calc(50vw - 20px)}}
 </style>
 </head>
 <body>
@@ -265,15 +265,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
       </div>
     </div>
   </nav>
-  <div id="filters">
-    <div id="filters-inner">
+
+  <div id="topbar">
+    <div id="topbar-inner">
       <button class="cat-pill active" data-cat="all">All Deals</button>
       <div class="filter-sep"></div>
-      <select class="filter-select" id="sort-select" title="Sort deals">
-        <option value="discount">🔥 Biggest Discount First</option>
-        <option value="price_asc">💰 Lowest Price First</option>
-        <option value="price_desc">⬆ Highest Price First</option>
-        <option value="newest">🆕 Newest Deals First</option>
+      <select class="tb-select" id="sort-select" title="Sort">
+        <option value="order">⭐ Featured</option>
+        <option value="discount">🔥 Biggest Discount</option>
+        <option value="price_asc">💰 Lowest Price</option>
+        <option value="price_desc">⬆ Highest Price</option>
+        <option value="newest">🆕 Newest First</option>
       </select>
       <div class="price-filter">
         <span class="price-label">₹</span>
@@ -281,12 +283,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
         <span class="price-label">—</span>
         <input class="price-input" id="price-max" type="number" placeholder="Max">
       </div>
-      <select class="filter-select" id="retailer-select"><option value="">All Retailers</option></select>
     </div>
   </div>
-  <div id="main">
-    <div id="skeletons" class="deal-grid" style="margin-bottom:40px"></div>
-    <div id="content"></div>
+
+  <div id="page-body">
+    <!-- Left sidebar — brand filter -->
+    <div id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">
+          Brands
+          <span class="sidebar-clear" id="clear-brands" onclick="clearBrands()" style="display:none">Clear</span>
+        </div>
+        <input class="sidebar-search" id="brand-search" placeholder="Search Brand" type="text">
+        <div class="brand-list" id="brand-list"></div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div id="content-area">
+      <div id="results-header" style="display:none">
+        <div id="results-count"></div>
+      </div>
+      <div id="skeletons" class="deal-grid" style="margin-bottom:20px"></div>
+      <div id="content" class="deal-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -295,7 +315,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   <div id="detail-nav">
     <div id="detail-nav-inner">
       <button id="back-btn" onclick="showListing()">← Back to deals</button>
-      <a href="#" id="detail-logo" onclick="showListing();return false" style="font-family:var(--font);font-size:18px;font-weight:800;text-decoration:none;color:var(--text)">Deals<span style="color:var(--accent)">Hub</span></a>
+      <a href="#" onclick="showListing();return false" style="font-family:var(--font);font-size:18px;font-weight:800;text-decoration:none;color:var(--text)">Deals<span style="color:var(--accent)">Hub</span></a>
     </div>
   </div>
   <div id="detail-inner">
@@ -308,60 +328,38 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 
 <script>
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
-let ALL_DEALS = [];
-let GLOBAL_TIMER = 12;
-let IMAGE_ROTATION_MS = 2000;
-let activeCategory = 'all';
-let activeRetailer = '';
-let activeSort = 'discount';
-let priceMin = null, priceMax = null;
-let searchQuery = '';
+let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
+let activeCat = 'all', activeSort = 'order', activeRetailer = '';
+let selectedBrands = new Set();
+let priceMin = null, priceMax = null, searchQuery = '';
 let allIntervals = [];
 
-// ── Helpers ──────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────
 const fmt = n => Number(n||0).toLocaleString('en-IN');
 
-function parseArr(val) {
-  if (!val) return [];
-  if (Array.isArray(val)) return val;
-  if (typeof val === 'string') {
-    try { const p = JSON.parse(val); return Array.isArray(p) ? p : []; } catch(e) { return []; }
-  }
-  return [];
+function parseArr(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  try { const p=JSON.parse(v); return Array.isArray(p)?p:[]; } catch(e) { return []; }
 }
-
 function getImages(deal) {
-  const urls = parseArr(deal.image_urls);
-  const order = parseArr(deal.image_order);
-  const hidden = parseArr(deal.hidden_images);
-  const idx = order.length > 0 ? order : urls.map((_,i) => i);
-  return idx.filter(i => !hidden.includes(i) && urls[i]).map(i => urls[i]);
+  const urls=parseArr(deal.image_urls);
+  const order=parseArr(deal.image_order);
+  const hidden=parseArr(deal.hidden_images);
+  const idx=order.length>0?order:urls.map((_,i)=>i);
+  return idx.filter(i=>!hidden.includes(i)&&urls[i]).map(i=>urls[i]);
 }
-
-// No proxy needed — <img> tags load cross-origin images natively in browsers
-function proxyImg(url) { return url || ''; }
-
-// Random "viewing" count per deal — seeded by deal id so stable per session
-function viewingCount(dealId) {
-  let hash = 0;
-  for (let i = 0; i < (dealId||'').length; i++) hash = (hash * 31 + dealId.charCodeAt(i)) & 0xfffffff;
-  const base = 12 + (hash % 180);
-  return base + Math.floor(Math.random() * 8); // slight jitter
+function proxyImg(url) { return url||''; }
+function viewingCount(id) {
+  let h=0; for(let i=0;i<(id||'').length;i++) h=(h*31+id.charCodeAt(i))&0xfffffff;
+  return 12+(h%180)+Math.floor(Math.random()*6);
 }
-
-// ── Timer ─────────────────────────────────────────────────────────
-function getTimeLeft(timerHours, withSeconds) {
-  const h = timerHours || GLOBAL_TIMER || 12;
-  const now = new Date();
-  const dayStart = new Date(now); dayStart.setHours(0,0,0,0);
-  const elapsed = now - dayStart;
-  const cycleMs = h * 3600000;
-  const msLeft = cycleMs - (elapsed % cycleMs);
-  const hLeft = Math.floor(msLeft / 3600000);
-  const mLeft = Math.floor((msLeft % 3600000) / 60000);
-  const sLeft = Math.floor((msLeft % 60000) / 1000);
-  if (withSeconds) return `${String(hLeft).padStart(2,'0')}:${String(mLeft).padStart(2,'0')}:${String(sLeft).padStart(2,'0')}`;
-  return `${hLeft}h ${mLeft}m left`;
+function getTimeLeft(timerHours, withSecs) {
+  const h=timerHours||GLOBAL_TIMER||12;
+  const now=new Date(), ds=new Date(now); ds.setHours(0,0,0,0);
+  const msLeft=(h*3600000)-((now-ds)%(h*3600000));
+  const hL=Math.floor(msLeft/3600000), mL=Math.floor((msLeft%3600000)/60000), sL=Math.floor((msLeft%60000)/1000);
+  return withSecs?`${String(hL).padStart(2,'0')}:${String(mL).padStart(2,'0')}:${String(sL).padStart(2,'0')}`:`${hL}h ${mL}m`;
 }
 
 // ── Fetch ─────────────────────────────────────────────────────────
@@ -370,95 +368,146 @@ async function fetchDeals() {
   const data = await res.json();
   GLOBAL_TIMER = data.global_timer_hours || 12;
   IMAGE_ROTATION_MS = data.image_rotation_ms || 2000;
-  ALL_DEALS = (data.deals || []).map(d => ({
-    ...d,
-    image_urls:    parseArr(d.image_urls),
-    image_order:   parseArr(d.image_order),
-    hidden_images: parseArr(d.hidden_images),
-  }));
+  CATEGORY_ORDER = data.category_order || []; // admin-defined category sort order
+  ALL_DEALS = (data.deals||[])
+    .filter(d => d.status === 'live' && d.hidden !== true)
+    .map(d => ({
+      ...d,
+      image_urls:    parseArr(d.image_urls),
+      image_order:   parseArr(d.image_order),
+      hidden_images: parseArr(d.hidden_images),
+      retailer_rates: parseArr(d.retailer_rates),
+    }));
 }
 
-// ── Filters ───────────────────────────────────────────────────────
-function buildFilters() {
-  const cats = [...new Set(ALL_DEALS.map(d=>d.category).filter(Boolean))].sort();
-  const pillsEl = document.getElementById('filters-inner');
-  pillsEl.querySelectorAll('.cat-pill:not([data-cat="all"])').forEach(p=>p.remove());
-  const sep = pillsEl.querySelector('.filter-sep');
-  cats.forEach(cat => {
+// ── Build sidebar brands ──────────────────────────────────────────
+function buildSidebar() {
+  // Category pills — sorted by admin-defined CATEGORY_ORDER, then alphabetical for remainder
+  const allCats = [...new Set(ALL_DEALS.map(d=>d.category).filter(Boolean))];
+  const orderedCats = [
+    ...CATEGORY_ORDER.filter(c => allCats.includes(c)),
+    ...allCats.filter(c => !CATEGORY_ORDER.includes(c)).sort()
+  ];
+  const topbar = document.getElementById('topbar-inner');
+  topbar.querySelectorAll('.cat-pill:not([data-cat="all"])').forEach(p=>p.remove());
+  const sep = topbar.querySelector('.filter-sep');
+  orderedCats.forEach(cat => {
     const p = document.createElement('button');
     p.className='cat-pill'; p.dataset.cat=cat; p.textContent=cat;
-    p.onclick = () => setCat(cat);
-    pillsEl.insertBefore(p, sep);
+    p.onclick=()=>setCat(cat);
+    topbar.insertBefore(p, sep);
   });
-  const retailers = [...new Set(ALL_DEALS.map(d=>d.report_storename).filter(Boolean))].sort();
-  const sel = document.getElementById('retailer-select');
-  retailers.forEach(r => { const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); });
+
+  // Brand list
+  renderBrandList('');
+  document.getElementById('brand-search').addEventListener('input', function() {
+    renderBrandList(this.value.trim().toLowerCase());
+  });
 }
 
-function setCat(cat) {
-  activeCategory = cat;
-  document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.cat===cat));
+function getBrandCounts() {
+  const counts = {};
+  ALL_DEALS.forEach(d => {
+    if (d.report_storename) counts[d.report_storename] = (counts[d.report_storename]||0)+1;
+  });
+  return counts;
+}
+
+function renderBrandList(query) {
+  const counts = getBrandCounts();
+  const brands = Object.entries(counts)
+    .filter(([b]) => !query || b.toLowerCase().includes(query))
+    .sort((a,b) => b[1]-a[1]);
+  const el = document.getElementById('brand-list');
+  el.innerHTML = '';
+  brands.forEach(([brand, count]) => {
+    const item = document.createElement('div');
+    item.className = 'brand-item';
+    const checked = selectedBrands.has(brand);
+    item.innerHTML = `<div class="brand-cb${checked?' checked':''}" data-brand="${brand}"></div>
+      <span class="brand-name">${brand}</span>
+      <span class="brand-count">${count}</span>`;
+    item.onclick = () => toggleBrand(brand);
+    el.appendChild(item);
+  });
+}
+
+function toggleBrand(brand) {
+  if (selectedBrands.has(brand)) selectedBrands.delete(brand);
+  else selectedBrands.add(brand);
+  document.getElementById('clear-brands').style.display = selectedBrands.size > 0 ? '' : 'none';
+  renderBrandList(document.getElementById('brand-search').value.trim().toLowerCase());
+  renderDeals();
+}
+function clearBrands() {
+  selectedBrands.clear();
+  document.getElementById('clear-brands').style.display = 'none';
+  renderBrandList('');
   renderDeals();
 }
 
+function setCat(cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===cat));
+  renderDeals();
+}
+
+// ── Filter + sort ─────────────────────────────────────────────────
 function getFiltered() {
   let deals = [...ALL_DEALS];
-  if (activeCategory !== 'all') deals = deals.filter(d => d.category===activeCategory);
-  if (activeRetailer) deals = deals.filter(d => d.report_storename===activeRetailer);
+  if (activeCat !== 'all') deals = deals.filter(d => d.category === activeCat);
+  if (selectedBrands.size > 0) deals = deals.filter(d => selectedBrands.has(d.report_storename));
   if (priceMin) deals = deals.filter(d => d.final_deal_price >= priceMin);
   if (priceMax) deals = deals.filter(d => d.final_deal_price <= priceMax);
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     deals = deals.filter(d => (d.product_name||'').toLowerCase().includes(q)||(d.category||'').toLowerCase().includes(q)||(d.report_storename||'').toLowerCase().includes(q));
   }
-  if (activeSort==='discount') deals.sort((a,b)=>b.discount_percent-a.discount_percent);
-  else if (activeSort==='price_asc') deals.sort((a,b)=>a.final_deal_price-b.final_deal_price);
-  else if (activeSort==='price_desc') deals.sort((a,b)=>b.final_deal_price-a.final_deal_price);
-  else if (activeSort==='newest') deals.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-  else deals.sort((a,b)=>a.deal_order-b.deal_order);
+  if (activeSort === 'discount') deals.sort((a,b) => b.discount_percent-a.discount_percent);
+  else if (activeSort === 'price_asc') deals.sort((a,b) => a.final_deal_price-b.final_deal_price);
+  else if (activeSort === 'price_desc') deals.sort((a,b) => b.final_deal_price-a.final_deal_price);
+  else if (activeSort === 'newest') deals.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+  else deals.sort((a,b) => (a.deal_order||999)-(b.deal_order||999)); // Featured = deal_order
   return deals;
 }
 
-// ── Render grid ───────────────────────────────────────────────────
+// ── Render flat deal grid ─────────────────────────────────────────
 function renderDeals() {
   allIntervals.forEach(clearInterval); allIntervals = [];
   const deals = getFiltered();
   const el = document.getElementById('content');
   el.innerHTML = '';
+
+  const header = document.getElementById('results-header');
+  const countEl = document.getElementById('results-count');
+  if (deals.length > 0) {
+    header.style.display = 'flex';
+    const brandStr = selectedBrands.size > 0 ? ` · ${[...selectedBrands].join(', ')}` : '';
+    const catStr = activeCat !== 'all' ? ` in ${activeCat}` : '';
+    countEl.innerHTML = `<strong>${deals.length}</strong> deal${deals.length!==1?'s':''}${catStr}${brandStr}`;
+  } else {
+    header.style.display = 'none';
+  }
+
   if (!deals.length) {
     el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No deals found</div><div>Try adjusting your filters</div></div>';
     return;
   }
-  const grouped = {};
-  deals.forEach(d => { const cat=d.category||'Other'; if(!grouped[cat]) grouped[cat]=[]; grouped[cat].push(d); });
-  Object.entries(grouped).forEach(([cat, catDeals]) => {
-    const section = document.createElement('div');
-    section.className = 'cat-section';
-    section.innerHTML = `<div class="cat-header"><div class="cat-title"><span class="cat-title-accent"></span>${cat}<span class="cat-count">${catDeals.length} deal${catDeals.length>1?'s':''}</span></div></div>`;
-    const grid = document.createElement('div');
-    grid.className = 'deal-grid';
-    catDeals.forEach(deal => grid.appendChild(makeCard(deal)));
-    section.appendChild(grid);
-    el.appendChild(section);
-  });
+  deals.forEach(deal => el.appendChild(makeCard(deal)));
 }
 
-function makeCard(deal) {
+function makeCard(deal, small) {
   const card = document.createElement('div');
   card.className = 'deal-card' + (!deal.availability?' oos':'');
+  if (small) card.style.fontSize = '12px';
   const imgs = getImages(deal);
   const disc = Math.round(deal.discount_percent||0);
-  const isRewards = deal.store_type === 'Rewards';
+  const isRewards = (deal.store_type||deal.ck_admin_stores?.store_type) === 'Rewards';
   const vc = viewingCount(deal.id);
 
-  // Build image element — use proxy for cross-origin images
-  let imgHtml;
-  if (imgs.length) {
-    imgHtml = `<img class="card-img" src="${proxyImg(imgs[0])}" loading="lazy" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-               <div class="card-img-placeholder" style="display:none">🛍</div>`;
-  } else {
-    imgHtml = `<div class="card-img-placeholder">🛍</div>`;
-  }
+  let imgHtml = imgs[0]
+    ? `<img class="card-img" src="${proxyImg(imgs[0])}" loading="lazy" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-img-placeholder" style="display:none">🛍</div>`
+    : `<div class="card-img-placeholder">🛍</div>`;
 
   card.innerHTML = `
     <div class="card-img-wrap">
@@ -475,19 +524,15 @@ function makeCard(deal) {
         <span class="card-price">₹${fmt(deal.final_deal_price)}</span>
       </div>
       <div class="card-footer">
-        <div class="card-timer"><span class="card-timer-icon">⏱</span><span class="card-timer-text" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--red)">--:--:--</span></div>
-        <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${deal.store_type||'Cashback'}</span>
+        <div class="card-timer"><span class="card-timer-text">--:--:--</span></div>
+        <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${isRewards?'Rewards':'Cashback'}</span>
       </div>
     </div>`;
 
-  // No rotation on grid cards — images only rotate on the deal detail page
-  // Just show first non-hidden image statically
-
-  // Ticking seconds timer
   const timerEl = card.querySelector('.card-timer-text');
-  const updateTimer = () => { if (timerEl) timerEl.textContent = getTimeLeft(deal.timer_hours, true); };
-  updateTimer();
-  const tiv = setInterval(updateTimer, 1000);
+  const updTimer = () => { if(timerEl) timerEl.textContent = getTimeLeft(deal.timer_hours, true); };
+  updTimer();
+  const tiv = setInterval(updTimer, 1000);
   allIntervals.push(tiv);
 
   card.onclick = () => showDetail(deal.id);
@@ -497,53 +542,40 @@ function makeCard(deal) {
 // ── Skeletons ─────────────────────────────────────────────────────
 function showSkeletons() {
   document.getElementById('skeletons').innerHTML = Array(8).fill(0).map(()=>`
-    <div class="skel-card">
-      <div class="skel-img skeleton"></div>
-      <div class="skel-body">
-        <div class="skel-line skeleton" style="width:45%;height:8px"></div>
-        <div class="skel-line skeleton" style="width:90%"></div>
-        <div class="skel-line skeleton" style="width:65%"></div>
-        <div class="skel-line skeleton" style="width:40%;height:18px;margin-top:4px"></div>
-      </div>
-    </div>`).join('');
+    <div class="skel-card"><div class="skel-img skeleton"></div>
+    <div class="skel-body"><div class="skel-line skeleton" style="width:45%;height:8px"></div>
+    <div class="skel-line skeleton" style="width:90%"></div><div class="skel-line skeleton" style="width:65%"></div>
+    <div class="skel-line skeleton" style="width:40%;height:16px;margin-top:4px"></div></div></div>`).join('');
 }
-function hideSkeletons() { document.getElementById('skeletons').innerHTML = ''; }
+function hideSkeletons() { document.getElementById('skeletons').innerHTML=''; }
 
 // ── Search ────────────────────────────────────────────────────────
 let searchTimeout;
 document.getElementById('search').addEventListener('input', function() {
   clearTimeout(searchTimeout);
   const q = this.value.trim();
-  if (q.length > 1) {
-    showSuggestions(q);
-    searchTimeout = setTimeout(() => { searchQuery=q; renderDeals(); }, 200);
-  } else {
-    document.getElementById('search-suggestions').style.display='none';
-    searchQuery=''; renderDeals();
-  }
+  if (q.length > 1) { showSuggestions(q); searchTimeout=setTimeout(()=>{searchQuery=q;renderDeals();},200); }
+  else { document.getElementById('search-suggestions').style.display='none'; searchQuery=''; renderDeals(); }
 });
-document.addEventListener('click', e => { if (!e.target.closest('#search-wrap')) document.getElementById('search-suggestions').style.display='none'; });
+document.addEventListener('click', e => { if(!e.target.closest('#search-wrap')) document.getElementById('search-suggestions').style.display='none'; });
 
 function showSuggestions(q) {
   const ql = q.toLowerCase();
-  const matches = ALL_DEALS
-    .filter(d => (d.product_name||'').toLowerCase().includes(ql)||(d.category||'').toLowerCase().includes(ql))
-    .sort((a,b) => a.deal_order-b.deal_order).slice(0,3);
+  const matches = ALL_DEALS.filter(d=>(d.product_name||'').toLowerCase().includes(ql)||(d.category||'').toLowerCase().includes(ql))
+    .sort((a,b)=>(a.deal_order||999)-(b.deal_order||999)).slice(0,3);
   const el = document.getElementById('search-suggestions');
   if (!matches.length) { el.style.display='none'; return; }
-  el.innerHTML = matches.map(d => {
-    const imgs = getImages(d);
+  el.innerHTML = matches.map(d=>{
+    const imgs=getImages(d);
     return `<div class="suggestion-item" onclick="showDetail('${d.id}')">
-      <div class="sug-img-wrap">${imgs[0]?`<img class="sug-img" src="${proxyImg(imgs[0])}" onerror="this.style.display='none'">`:'🛍'}</div>
+      <div class="sug-img-wrap">${imgs[0]?`<img class="sug-img" src="${imgs[0]}" onerror="this.style.display='none'">`:'🛍'}</div>
       <div class="sug-info"><div class="sug-name">${d.product_name||''}</div><div class="sug-price">${d.report_storename} · ₹${fmt(d.final_deal_price)}</div></div>
-      <span class="sug-badge">${Math.round(d.discount_percent||0)}% OFF</span>
-    </div>`;
+      <span class="sug-badge">${Math.round(d.discount_percent||0)}% OFF</span></div>`;
   }).join('');
   el.style.display='block';
 }
 
 document.getElementById('sort-select').onchange = function() { activeSort=this.value; renderDeals(); };
-document.getElementById('retailer-select').onchange = function() { activeRetailer=this.value; renderDeals(); };
 document.getElementById('price-min').oninput = function() { priceMin=this.value?Number(this.value):null; renderDeals(); };
 document.getElementById('price-max').oninput = function() { priceMax=this.value?Number(this.value):null; renderDeals(); };
 document.querySelector('.cat-pill[data-cat="all"]').onclick = () => setCat('all');
@@ -558,9 +590,8 @@ function showDetail(dealId) {
   document.getElementById('listing-page').style.display='none';
   document.getElementById('detail-page').style.display='block';
 }
-
 function showListing() {
-  window.location.hash = '';
+  window.location.hash='';
   allIntervals.forEach(clearInterval); allIntervals=[];
   document.getElementById('detail-page').style.display='none';
   document.getElementById('listing-page').style.display='block';
@@ -581,8 +612,8 @@ function renderDetail(deal) {
 
   // Gallery
   let imgIdx=0, autoRotate, galleryHovered=false;
-  const galleryEl=document.getElementById('gallery');
-  galleryEl.innerHTML=`
+  const galleryEl = document.getElementById('gallery');
+  galleryEl.innerHTML = `
     <div class="gallery-main" id="gmain">
       ${imgs[0]?`<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
       <div class="gallery-count" id="gcount">${imgs.length>1?'1/'+imgs.length:''}</div>
@@ -590,7 +621,14 @@ function renderDetail(deal) {
     <div class="gallery-thumbs" id="gthumbs">
       ${imgs.map((url,i)=>`<img class="gallery-thumb${i===0?' active':''}" src="${proxyImg(url)}" data-idx="${i}" loading="lazy" onerror="this.style.display='none'">`).join('')}
     </div>`;
-  function goImg(i){imgIdx=i;const g=document.getElementById('gimg');if(g){g.classList.add('fade');setTimeout(()=>{g.src=proxyImg(imgs[i]);g.classList.remove('fade');},250);}document.getElementById('gcount').textContent=imgs.length>1?(i+1)+'/'+imgs.length:'';document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.toggle('active',+t.dataset.idx===i));}
+
+  function goImg(i) {
+    imgIdx=i;
+    const g=document.getElementById('gimg');
+    if(g){g.classList.add('fade');setTimeout(()=>{g.src=proxyImg(imgs[i]);g.classList.remove('fade');},250);}
+    document.getElementById('gcount').textContent=imgs.length>1?(i+1)+'/'+imgs.length:'';
+    document.querySelectorAll('.gallery-thumb').forEach(t=>t.classList.toggle('active',+t.dataset.idx===i));
+  }
   document.getElementById('gthumbs').onclick=e=>{const t=e.target.closest('.gallery-thumb');if(t){clearInterval(autoRotate);goImg(+t.dataset.idx);}};
   document.getElementById('gmain').addEventListener('mouseenter',()=>galleryHovered=true);
   document.getElementById('gmain').addEventListener('mouseleave',()=>galleryHovered=false);
@@ -609,7 +647,7 @@ function renderDetail(deal) {
     const pAfterCb=cbBase-cbAmt;
     const final=Math.round(rule==='no'?pAfterCb+sf:pAfterCb);
     const discPct=deal.mrp>0?Math.round((deal.mrp-final)/deal.mrp*100):0;
-    return{cd,ac,pdAmt,ap,sf,rule,cbBase,cbAmt,final,discPct,cbVal};
+    return{cd,ac,pdAmt,ap,sf,rule,cbAmt,final,discPct,cbVal};
   }
   function buildWfRows(w){
     let r=`<div class="wf-r s"><span>MRP</span><span class="wv">₹${fmt(deal.mrp)}</span></div><div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
@@ -619,25 +657,33 @@ function renderDetail(deal) {
     r+=`<div class="wf-r d"><span>CashKaro ${w.cbVal}${cbType} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price</span><span class="wv">₹${fmt(w.final)}</span></div><div class="wf-r sv"><span>🎉 You save ${w.discPct}% vs MRP</span></div>`;
     return r;
   }
+
   const wNew=calcWf(cb);
   const wExisting=isB1&&existingCb!==null?calcWf(existingCb):null;
-  let wCurrent=wNew, cbCurrent=cb;
-
-  // B1 tabs
   const userTabsHtml=isB1&&wExisting?`<div class="user-tabs" id="user-tabs">
-    <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:11px;opacity:.8">₹${fmt(wNew.final)} final price</small></button>
-    <button class="user-tab" id="tab-eu" onclick="switchUserTab('existing')">🔄 Existing ${deal.report_storename} User<br><small style="font-size:11px;opacity:.8">₹${fmt(wExisting.final)} final price</small></button>
+    <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:10px;opacity:.8">₹${fmt(wNew.final)}</small></button>
+    <button class="user-tab" id="tab-eu" onclick="switchUserTab('existing')">🔄 Existing User<br><small style="font-size:10px;opacity:.8">₹${fmt(wExisting.final)}</small></button>
   </div>`:'';
 
   let ratesHtml='';
-  if(rates.length)ratesHtml=`<div style="margin-bottom:8px;font-size:12px;color:var(--text3);font-weight:600">Multiple cashback rates:</div><table class="rates-table"><thead><tr><th>User type</th><th>Cashback</th></tr></thead><tbody>${rates.map(r=>`<tr><td>${r.rate_label}</td><td>${r.cashback}${r.cashback_type==='percent'?'%':'₹'}</td></tr>`).join('')}</tbody></table>`;
-  const tc=(store.cashback_tc||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'');
+  if(rates.length)ratesHtml=`<div style="margin-bottom:8px;font-size:12px;color:var(--text3);font-weight:600">Multiple rates:</div><table class="rates-table"><thead><tr><th>User type</th><th>Cashback</th></tr></thead><tbody>${rates.map(r=>`<tr><td>${r.rate_label}</td><td>${r.cashback}${r.cashback_type==='percent'?'%':'₹'}</td></tr>`).join('')}</tbody></table>`;
 
-  document.getElementById('detail-info').innerHTML=`
+  const tc=(store.cashback_tc||'').replace(/<script[^>]*>[\s\S]*?<\/script>/gi,'');
+  const disc=wNew.discPct;
+  const trackingSpeed = store.tracking_speed || '—';
+  const confirmDays = store.expected_confirmation_days || '—';
+  const storeType = store.store_type || 'Cashback';
+  const cbWord = isRewards ? 'Rewards' : 'Cashback';
+
+  // Parse tracking speed — extract number if possible
+  const trackNum = String(trackingSpeed).match(/\d+/)?.[0] || trackingSpeed;
+  const trackUnit = String(trackingSpeed).replace(/\d+/,'').trim() || '';
+
+  document.getElementById('detail-info').innerHTML = `
     <div class="detail-retailer-row">
       <span class="detail-retailer">${deal.report_storename||''}</span>
       <span class="detail-cat-badge">${deal.category||''}</span>
-      <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${store.store_type||'Cashback'}</span>
+      <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${storeType}</span>
     </div>
     <div class="detail-name">${deal.product_name||''}</div>
     <div><div class="detail-viewing"><span class="detail-viewing-dot"></span>${vc} people viewing right now</div></div>
@@ -646,29 +692,42 @@ function renderDetail(deal) {
       <div class="detail-price-row">
         <span class="detail-mrp">₹${fmt(deal.mrp)}</span>
         <span class="detail-price" id="dp-final">₹${fmt(wNew.final)}</span>
-        <span class="detail-discount-badge" id="dp-disc">${wNew.discPct}% OFF</span>
+        <span class="detail-discount-badge" id="dp-disc">${disc}% OFF</span>
       </div>
       <div class="detail-timer">
         <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
         <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
       </div>
-      <div class="detail-cashback-line" style="margin-top:12px">Earn <strong id="dp-cb-val">${cb}${cbType} ${isRewards?'Rewards':'Cashback'}</strong> on this purchase via CashKaro</div>
+      <div class="detail-cashback-line" style="margin-top:10px">Earn <strong id="dp-cb-val">${cb}${cbType} ${cbWord}</strong> on this purchase via CashKaro</div>
     </div>
-    <a class="cta-btn" href="${store.linkurl||'#'}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${isRewards?'Rewards':'Cashback'}</a>
+    <a class="cta-btn" href="${store.linkurl||'#'}" target="_blank" rel="noopener">🛍 Shop Now &amp; Earn ${cb}${cbType} ${cbWord}</a>
     <div class="cta-sub">Cashback tracked via CashKaro. Must shop through this link.</div>
     <div class="tabs-wrap">
       <div class="tab-list">
         <button class="tab-btn active" onclick="switchTab(this,'about')">About</button>
-        <button class="tab-btn" onclick="switchTab(this,'cbinfo')">Cashback Info</button>
+        <button class="tab-btn" onclick="switchTab(this,'cbinfo')">${cbWord} Info</button>
         <button class="tab-btn" onclick="switchTab(this,'terms')">T&amp;Cs</button>
       </div>
       <div class="tab-content active" id="tab-about">${deal.description?deal.description.replace(/\n/g,'<br>'):'<span style="color:var(--text3)">Description coming soon.</span>'}</div>
       <div class="tab-content" id="tab-cbinfo">
-        <div class="info-row">
-          <div class="info-chip"><span class="info-chip-label">Tracking speed</span><span class="info-chip-val">${store.tracking_speed||'—'}</span></div>
-          <div class="info-chip"><span class="info-chip-label">Confirmation in</span><span class="info-chip-val">${store.expected_confirmation_days||'—'} days</span></div>
-          <div class="info-chip"><span class="info-chip-label">Type</span><span class="info-chip-val">${store.store_type||'Cashback'}</span></div>
-        </div>${ratesHtml}
+        <div class="cb-chips">
+          <div class="cb-chip green">
+            <div class="cb-chip-label">${cbWord} tracks in</div>
+            <div class="cb-chip-val">${trackNum}</div>
+            <div class="cb-chip-unit">${trackUnit}</div>
+          </div>
+          <div class="cb-chip green">
+            <div class="cb-chip-label">${cbWord} confirms in</div>
+            <div class="cb-chip-val">${confirmDays}</div>
+            <div class="cb-chip-unit">Days</div>
+          </div>
+          <div class="cb-chip">
+            <div class="cb-chip-label">Type</div>
+            <div class="cb-chip-val" style="font-size:18px">${storeType}</div>
+            <div class="cb-chip-unit">${isRewards?'Store Credits':'Real Cash'}</div>
+          </div>
+        </div>
+        ${ratesHtml}
       </div>
       <div class="tab-content" id="tab-terms">${tc||'<span style="color:var(--text3)">Standard CashKaro T&Cs apply.</span>'}</div>
     </div>
@@ -677,14 +736,14 @@ function renderDetail(deal) {
       <div class="wf-body" id="wf-body">${buildWfRows(wNew)}</div>
     </div>`;
 
-  window.switchUserTab=(type)=>{
+  window.switchUserTab = (type) => {
     document.getElementById('tab-nu')?.classList.toggle('active',type==='new');
     document.getElementById('tab-eu')?.classList.toggle('active',type==='existing');
     const w=type==='existing'&&wExisting?wExisting:wNew;
     const cbV=type==='existing'&&existingCb!==null?existingCb:cb;
     document.getElementById('dp-final').textContent='₹'+fmt(w.final);
     document.getElementById('dp-disc').textContent=w.discPct+'% OFF';
-    document.getElementById('dp-cb-val').textContent=cbV+cbType+' '+(isRewards?'Rewards':'Cashback');
+    document.getElementById('dp-cb-val').textContent=cbV+cbType+' '+cbWord;
     document.getElementById('wf-body').innerHTML=buildWfRows(w);
   };
 
@@ -692,54 +751,48 @@ function renderDetail(deal) {
   updTimer(); const dtInt=setInterval(updTimer,1000); allIntervals.push(dtInt);
 
   // Similar deals
-  const detailInner=document.getElementById('detail-inner');
+  const detailInner = document.getElementById('detail-inner');
   detailInner.querySelector('.similar-section')?.remove();
-  const similar=ALL_DEALS.filter(d=>d.id!==deal.id&&d.category===deal.category).slice(0,6);
+  const similar = ALL_DEALS.filter(d=>d.id!==deal.id&&d.category===deal.category).slice(0,6);
   if(similar.length>0){
     const sec=document.createElement('div'); sec.className='similar-section';
-    sec.innerHTML=`<div class="similar-title"><span style="display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px"></span>Deals you may like</div><div class="similar-grid" id="sim-grid"></div>`;
+    sec.innerHTML=`<div class="similar-title"><span style="display:inline-block;width:4px;height:20px;background:var(--accent);border-radius:2px"></span>Deals you may like</div><div class="similar-grid" id="sim-grid"></div>`;
     detailInner.appendChild(sec);
-    similar.forEach(d=>sec.querySelector('#sim-grid').appendChild(makeCard(d)));
+    similar.forEach(d=>sec.querySelector('#sim-grid').appendChild(makeCard(d,true)));
   }
 }
 
 function switchTab(btn, tabId) {
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  btn.closest('.tabs-wrap').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.closest('.tabs-wrap').querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-'+tabId).classList.add('active');
 }
-
 function toggleWf(el) {
-  const body = document.getElementById('wf-body');
+  const body=document.getElementById('wf-body');
   body.classList.toggle('open');
-  el.querySelector('span:last-child').textContent = body.classList.contains('open') ? '▴' : '▾';
+  el.querySelector('span:last-child').textContent=body.classList.contains('open')?'▴':'▾';
 }
 
 // ── Hash routing ──────────────────────────────────────────────────
-let pendingDealId = null;
+let pendingDealId=null;
 function handleHash() {
-  const hash = window.location.hash.slice(1);
-  if (hash.startsWith('deal/')) {
-    const id = hash.replace('deal/','');
-    if (ALL_DEALS.length) showDetail(id);
-    else pendingDealId = id;
-  } else {
-    showListing();
-  }
+  const hash=window.location.hash.slice(1);
+  if(hash.startsWith('deal/')){const id=hash.replace('deal/','');if(ALL_DEALS.length)showDetail(id);else pendingDealId=id;}
+  else showListing();
 }
-window.addEventListener('hashchange', handleHash);
+window.addEventListener('hashchange',handleHash);
 
 // ── Boot ──────────────────────────────────────────────────────────
-(async () => {
+(async()=>{
   showSkeletons();
-  document.getElementById('listing-page').style.display = 'block';
-  try { await fetchDeals(); } catch(e) { console.error('Failed to load deals', e); }
+  document.getElementById('listing-page').style.display='block';
+  try{await fetchDeals();}catch(e){console.error('Failed to load deals',e);}
   hideSkeletons();
-  buildFilters();
+  buildSidebar();
   renderDeals();
-  document.getElementById('loader').style.display = 'none';
-  if (pendingDealId) { showDetail(pendingDealId); pendingDealId=null; }
+  document.getElementById('loader').style.display='none';
+  if(pendingDealId){showDetail(pendingDealId);pendingDealId=null;}
   else handleHash();
 })();
 </script>
