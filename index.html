@@ -171,10 +171,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .detail-retailer-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .detail-retailer{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);font-weight:600}
 .detail-name{font-family:var(--font);font-size:24px;font-weight:800;line-height:1.3;letter-spacing:-.4px;color:var(--text)}
-.detail-timer{display:inline-flex;align-items:center;gap:7px;background:#e53e3e;border-radius:9px;padding:7px 13px;color:#fff;width:200px}
-.detail-timer-icon{font-size:15px}
+.detail-timer{display:inline-flex;align-items:center;gap:6px;background:#e53e3e;border-radius:8px;padding:5px 10px;color:#fff}
+.detail-timer-icon{font-size:13px}
 .detail-timer-label{font-size:12px;color:#fff;font-weight:500}
-.detail-timer-value{font-family:var(--mono);font-size:14px;font-weight:700;color:#fff}
+.detail-timer-value{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff}
 .detail-price-block{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
 .detail-price-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
 .detail-mrp{text-decoration:line-through;color:var(--text3);font-size:15px}
@@ -554,7 +554,12 @@ function showDetail(dealId){
   if(fc&&window.innerWidth<=900)fc.style.display='block';
 }
 function showListing(){
-  window.location.hash='';allIntervals.forEach(clearInterval);allIntervals=[];
+  window.location.hash='';
+  allIntervals.forEach(item=>{
+    if(typeof item === 'number') clearInterval(item);
+    else if(item?._cleanup) item._cleanup();
+  });
+  allIntervals=[];
   document.getElementById('floating-cta').style.display='none';
   document.getElementById('detail-page').style.display='none';
   document.getElementById('listing-page').style.display='block';
@@ -576,14 +581,16 @@ function renderDetail(deal){
   const cbType=store.cashback_type==='percent'?'%':'₹';
   const existingCb=isB1?(deal.b1_existing_cashback??null):null;
 
-  // Gallery — swipeable single image with dot indicators and arrows
+  // Gallery — swipeable single image with dot indicators and arrows. No auto-rotate.
   const galleryEl=document.getElementById('gallery');
-  let gIdx=0,gAutoRotate,gHovered=false,gStartX=0,gDragging=false;
+  let gIdx=0,gStartX=0,gDragging=false;
+  window.gIdx=0; // global so arrow onclick strings can access it
   const slidesHtml=imgs.length>0
     ?imgs.map(url=>`<div class="gallery-slide"><img src="${url}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''"></div>`).join('')
     :'<div class="gallery-slide"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div></div>';
   const dotsHtml=imgs.length>1?imgs.map((_,i)=>`<div class="gallery-dot${i===0?' active':''}" onclick="gGoTo(${i})"></div>`).join(''):'';
-  const arrowsHtml=imgs.length>1?`<button class="gallery-arrow prev" onclick="gGoTo(gIdx-1)">‹</button><button class="gallery-arrow next" onclick="gGoTo(gIdx+1)">›</button>`:'';
+  // Arrows use window.gIdx so they always read current value
+  const arrowsHtml=imgs.length>1?`<button class="gallery-arrow prev" onclick="gGoTo(window.gIdx-1)">&#8249;</button><button class="gallery-arrow next" onclick="gGoTo(window.gIdx+1)">&#8250;</button>`:'';
 
   galleryEl.innerHTML=`
     <div class="gallery-main" id="gmain">
@@ -593,25 +600,35 @@ function renderDetail(deal){
     ${imgs.length>1?`<div class="gallery-dots" id="gdots">${dotsHtml}</div>`:''}`;
 
   window.gGoTo=(i)=>{
-    gIdx=Math.max(0,Math.min(imgs.length-1,i));
-    document.getElementById('gslider').style.transform=`translateX(-${gIdx*100}%)`;
-    document.querySelectorAll('.gallery-dot').forEach((d,di)=>d.classList.toggle('active',di===gIdx));
-    clearInterval(gAutoRotate);
-    // Restart auto-rotate after manual interaction
-    if(imgs.length>1&&!gHovered){gAutoRotate=setInterval(()=>window.gGoTo((gIdx+1)%imgs.length),IMAGE_ROTATION_MS);allIntervals.push(gAutoRotate);}
+    window.gIdx=Math.max(0,Math.min(imgs.length-1,i));
+    const sl=document.getElementById('gslider');
+    if(sl)sl.style.transform=`translateX(-${window.gIdx*100}%)`;
+    document.querySelectorAll('#gdots .gallery-dot').forEach((d,di)=>d.classList.toggle('active',di===window.gIdx));
   };
 
-  // Touch swipe
-  const gmain=document.getElementById('gmain');
-  gmain.addEventListener('touchstart',e=>{gStartX=e.touches[0].clientX;gDragging=true;},{passive:true});
-  gmain.addEventListener('touchend',e=>{if(!gDragging)return;gDragging=false;const diff=gStartX-e.changedTouches[0].clientX;if(Math.abs(diff)>40)window.gGoTo(diff>0?gIdx+1:gIdx-1);});
-  // Mouse drag on desktop
-  gmain.addEventListener('mousedown',e=>{gStartX=e.clientX;gDragging=true;e.preventDefault();});
-  gmain.addEventListener('mouseup',e=>{if(!gDragging)return;gDragging=false;const diff=gStartX-e.clientX;if(Math.abs(diff)>40)window.gGoTo(diff>0?gIdx+1:gIdx-1);});
-  gmain.addEventListener('mouseenter',()=>{gHovered=true;clearInterval(gAutoRotate);});
-  gmain.addEventListener('mouseleave',()=>{gHovered=false;if(imgs.length>1){gAutoRotate=setInterval(()=>window.gGoTo((gIdx+1)%imgs.length),IMAGE_ROTATION_MS);allIntervals.push(gAutoRotate);}});
-
-  if(imgs.length>1){gAutoRotate=setInterval(()=>window.gGoTo((gIdx+1)%imgs.length),IMAGE_ROTATION_MS);allIntervals.push(gAutoRotate);}
+  if(imgs.length>1){
+    const gmain=document.getElementById('gmain');
+    // Touch swipe
+    gmain.addEventListener('touchstart',e=>{gStartX=e.touches[0].clientX;gDragging=true;},{passive:true});
+    gmain.addEventListener('touchend',e=>{
+      if(!gDragging)return;gDragging=false;
+      const diff=gStartX-e.changedTouches[0].clientX;
+      if(Math.abs(diff)>40)window.gGoTo(diff>0?window.gIdx+1:window.gIdx-1);
+    },{passive:true});
+    // Mouse drag — listen on document so fast drags don't miss mouseup
+    gmain.addEventListener('mousedown',e=>{
+      if(e.target.closest('.gallery-arrow'))return; // don't interfere with arrows
+      gStartX=e.clientX;gDragging=true;e.preventDefault();
+    });
+    const onMouseUp=e=>{
+      if(!gDragging)return;gDragging=false;
+      const diff=gStartX-e.clientX;
+      if(Math.abs(diff)>40)window.gGoTo(diff>0?window.gIdx+1:window.gIdx-1);
+    };
+    document.addEventListener('mouseup',onMouseUp);
+    // Clean up listener when leaving detail page
+    allIntervals.push({_cleanup:()=>document.removeEventListener('mouseup',onMouseUp)});
+  }
 
   // Waterfall
   function calcWf(cbVal){
@@ -672,9 +689,12 @@ function renderDetail(deal){
       <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${storeType}</span>
       ${priceDrop?`<span style="background:#fef2f2;color:#e53e3e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid #fecaca">🔥 Price Dropped</span>`:''}
     </div>
-    <div class="detail-timer">
-      <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
-      <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2)">${deal.report_storename||''}</span>
+      <div class="detail-timer">
+        <span class="detail-timer-icon">⏱</span>
+        <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
+      </div>
     </div>
     <div class="detail-name">${deal.product_name||''}</div>
     ${userTabsHtml}
