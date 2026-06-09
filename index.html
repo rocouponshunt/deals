@@ -737,7 +737,8 @@ function renderDetail(deal){
 
   const qty=deal.quantity||1;
 
-  // Waterfall
+  // Waterfall — deal.mrp and deal.discounted_price are already multiplied by qty in DB
+  // perUnit = final / qty for display only
   function calcWf(cbVal){
     const cd=deal.coupon_type==='percent'?(deal.discounted_price*(deal.coupon_discount/100)):(deal.coupon_discount||0);
     const ac=deal.discounted_price-cd;
@@ -754,8 +755,12 @@ function renderDetail(deal){
   }
   function buildWfRows(w){
     const qtyLabel=qty>1?` (${qty} units)`:'';
+    // per unit = total final / qty
     const perUnit=qty>1?Math.round(w.final/qty):0;
-    let r=`<div class="wf-r s"><span>MRP${qtyLabel}</span><span class="wv">₹${fmt(deal.mrp)}</span></div><div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
+    const mrpPerUnit=qty>1?Math.round(deal.mrp/qty):0;
+    let r=`<div class="wf-r s"><span>MRP${qtyLabel}</span><span class="wv">₹${fmt(deal.mrp)}</span></div>`;
+    if(qty>1)r+=`<div class="wf-r" style="color:var(--text3);font-size:11px"><span>  ₹${fmt(mrpPerUnit)}/unit × ${qty}</span><span class="wv"></span></div>`;
+    r+=`<div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
     if(w.cd>0)r+=`<div class="wf-r d"><span>Coupon (${deal.coupon_code||''})</span><span class="wv">−₹${fmt(w.cd)}</span></div>`;
     if(w.pdAmt>0)r+=`<div class="wf-r d"><span>Prepaid discount</span><span class="wv">−₹${fmt(w.pdAmt)}</span></div>`;
     if(w.sf>0)r+=`<div class="wf-r a"><span>+ Shipping</span><span class="wv">₹${fmt(w.sf)}</span></div>`;
@@ -766,6 +771,9 @@ function renderDetail(deal){
   }
 
   const wNew=calcWf(cb);
+  // Override wNew.final with DB stored value to ensure card and detail match exactly
+  // DB final_deal_price is the authoritative total (already accounts for qty)
+  if(deal.final_deal_price) wNew.final = Math.round(deal.final_deal_price);
   const wExisting=isB1&&existingCb!==null?calcWf(existingCb):null;
   const userTabsHtml=isB1&&wExisting?`<div class="user-tabs" id="user-tabs">
     <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:10px;opacity:.8">₹${fmt(wNew.final)}</small></button>
