@@ -560,14 +560,39 @@ function makeCard(deal,small){
   card.className='deal-card'+(deal.availability===false?' oos':'');
   if(small)card.style.fontSize='12px';
   const imgs=getImages(deal);
-  const disc=Math.round(deal.discount_percent||0);
   const isRewards=(deal.store_type||deal.ck_admin_stores?.store_type)==='Rewards';
   const vc=viewingCount(deal.id);
   const finalPrice=Math.round(deal.final_deal_price||0);
   const mrp=Math.round(deal.mrp||0);
   const priceDrop=deal.price_dropped===true;
   const qty=deal.quantity||1;
-  const perUnit=qty>1?Math.round(finalPrice/qty):0;
+
+  // Recalculate final price the same way the detail page does
+  // so card and detail always match
+  function cardCalcFinal(){
+    try{
+      const store=deal.ck_admin_stores||deal;
+      const groupid=store.groupid||deal.groupid||'A';
+      let cbVal;
+      if(groupid==='B1')cbVal=deal.b1_new_cashback??deal.cashback_override??store.cashback??0;
+      else if(groupid!=='A')cbVal=deal.cashback_override??0;
+      else cbVal=store.cashback??0;
+      const cbRaw=groupid!=='A'?(deal.cashback_override_type||'percent'):(store.cashback_type||'percent');
+      const cd=deal.coupon_type==='percent'?(deal.discounted_price*(deal.coupon_discount/100)):(deal.coupon_discount||0);
+      const ac=deal.discounted_price-cd;
+      const pdAmt=deal.prepaid_type_override==='percent'?ac*((deal.prepaid_discount_override||0)/100):(deal.prepaid_discount_override||0);
+      const ap=ac-pdAmt;
+      const sf=deal.shipping_fee_override??store.shipping_fee??0;
+      const rule=deal.shipping_rule_override??store.shipping_rule??'yes';
+      const cbBase=rule==='yes'?ap+sf:ap;
+      const cbAmt=cbRaw==='percent'?cbBase*(cbVal/100):cbVal;
+      const pAfterCb=cbBase-cbAmt;
+      return Math.round(rule==='no'?pAfterCb+sf:pAfterCb);
+    }catch(e){return finalPrice;}
+  }
+  const calculatedFinal=cardCalcFinal();
+  const perUnit=qty>1?Math.round(calculatedFinal/qty):0;
+  const disc=mrp>0?Math.round((mrp-calculatedFinal)/mrp*100):(Math.round(deal.discount_percent||0));
 
   // Build swipeable image slider — multiple slides, one visible at a time
   let slidesHtml='';
@@ -590,7 +615,7 @@ function makeCard(deal,small){
       <div class="card-name">${deal.product_name||''}</div>
       <div class="card-prices">
         <span class="card-mrp">₹${fmt(mrp)}</span>
-        <span class="card-price">₹${fmt(finalPrice)}</span>
+        <span class="card-price">₹${fmt(calculatedFinal)}</span>
       </div>
       ${qty>1?`<div style="font-size:11px;color:var(--text2);margin-top:2px">For ${qty} units · <strong style="color:var(--green)">₹${fmt(perUnit)}/unit</strong></div>`:''}
       <div class="card-footer">
@@ -771,9 +796,6 @@ function renderDetail(deal){
   }
 
   const wNew=calcWf(cb);
-  // Override wNew.final with DB stored value to ensure card and detail match exactly
-  // DB final_deal_price is the authoritative total (already accounts for qty)
-  if(deal.final_deal_price) wNew.final = Math.round(deal.final_deal_price);
   const wExisting=isB1&&existingCb!==null?calcWf(existingCb):null;
   const userTabsHtml=isB1&&wExisting?`<div class="user-tabs" id="user-tabs">
     <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:10px;opacity:.8">₹${fmt(wNew.final)}</small></button>
