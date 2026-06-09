@@ -26,7 +26,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 #nav-inner{max-width:1400px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px}
 #logo{font-family:var(--font);font-size:21px;font-weight:800;letter-spacing:-.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
 #logo span{color:var(--accent)}
-#search-wrap{flex:1;max-width:460px;position:relative}
+#search-wrap {
+    flex: 1;
+    max-width: 100%;
+    position: relative;
+}
 #search{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:9px 14px 9px 40px;border-radius:11px;font-family:var(--body);font-size:14px;outline:none;transition:all .15s}
 #search:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(92,43,226,.08)}
 #search::placeholder{color:var(--text3)}
@@ -52,7 +56,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .filter-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
 .tb-select{background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);padding:4px 10px;border-radius:8px;font-family:var(--body);font-size:12px;cursor:pointer;outline:none;flex-shrink:0}
 .tb-select:focus{border-color:var(--accent)}
-.price-filter{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.price-filter{display:none;align-items:center;gap:5px;flex-shrink:0}
 .price-input{width:76px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);padding:4px 8px;border-radius:8px;font-family:var(--body);font-size:12px;outline:none}
 .price-input:focus{border-color:var(--accent)}
 .price-input::placeholder{color:var(--text3)}
@@ -100,18 +104,66 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text3);background:var(--bg3)}
 .card-discount-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:2}
 .card-oos-overlay{position:absolute;inset:0;background:rgba(245,245,247,.8);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2)}
-.card-viewing{position:absolute;bottom:7px;left:7px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;display:flex;align-items:center;gap:4px;backdrop-filter:blur(4px)}
+.card-viewing {
+    /* position: absolute; */
+    /* bottom: 7px; */
+    /* left: 0; */
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(4px);
+    right: 0;
+    float: left;
+    margin-top: 6px;
+}
 .card-viewing-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:blink 1.4s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .card-body{padding:12px;flex:1;display:flex;flex-direction:column;gap:4px}
 .card-retailer{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
 .card-name{font-family:var(--font);font-size:13px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
-.card-prices{display:flex;align-items:baseline;gap:7px;margin-top:4px}
+.card-price {
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 800;
+    color: green;
+    letter-spacing: -.5px;
+}
 .card-mrp{text-decoration:line-through;font-size:11px;color:var(--text3)}
-.card-price{font-family:var(--font);font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;padding-top:8px;border-top:1px solid var(--border)}
-.card-timer{display:flex;align-items:center;gap:4px;background:var(--red-bg);border:1px solid #fecaca;border-radius:5px;padding:2px 7px}
-.card-timer-text{font-size:10px;font-weight:700;color:var(--red);font-family:var(--mono)}
+
+.card-footer {
+    /* display: flex; */
+    /* align-items: center; */
+    justify-content: space-between;
+    /* margin-top: 6px; */
+    padding-top: 8px;
+    /* border-top: 1px solid var(--border); */
+}
+.card-timer {
+    display: flex;
+    /* align-items: center; */
+    gap: 4px;
+    background: #ff0000;
+    border: 1px solid #fecaca;
+    border-radius: 5px;
+    padding: 5px 7px;
+    float: left;
+    /* width: 150px; */
+    /* display: block; */
+    position: absolute;
+    bottom: 0;
+}
+.card-timer-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    font-family: var(--mono);
+}
 .card-type-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
 .badge-cashback{background:var(--green-bg);color:var(--green)}
 .badge-rewards{background:var(--accent-light);color:var(--accent)}
@@ -139,11 +191,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 #detail-inner{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start}
 @media(max-width:768px){.detail-grid{grid-template-columns:1fr}}
-.gallery{position:sticky;top:76px}
+.gallery{position:sticky;top:60px}
 .gallery-main{aspect-ratio:1;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;margin-bottom:10px;box-shadow:var(--shadow)}
 .gallery-main img{width:100%;height:100%;object-fit:contain;padding:18px;transition:opacity .3s}
 .gallery-main img.fade{opacity:0}
-.gallery-count{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;font-family:var(--mono)}
+.gallery-count {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,.5);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    display: none;
+}
+a#floating-cta-btn {
+    width: 100%;
+}
 /* Category icon pills */
 .cat-icon-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;background:var(--bg3);border:1.5px solid var(--border);color:var(--text2);font-size:11px;font-weight:500}
 .cat-icon-pill .cat-emoji{font-size:14px}
@@ -154,7 +221,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .gallery-thumbs-vertical .gallery-thumb{width:50px;height:50px}
 .gallery-main-wrap{flex:1;min-width:0}
 /* Horizontal thumbs (desktop) */
-.gallery-thumbs-horizontal{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:10px}
+.gallery-thumbs-horizontal{display:none;gap:7px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-top:10px}
 .gallery-thumbs-horizontal::-webkit-scrollbar{display:none}
 .gallery-thumbs-horizontal .gallery-thumb{width:58px;height:58px;flex-shrink:0}
 @media(max-width:768px){
@@ -164,7 +231,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 }
 
 /* Viewing badge — on image */
-.gallery-viewing-badge{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;backdrop-filter:blur(4px);z-index:2}
+.gallery-viewing-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    backdrop-filter: blur(4px);
+    z-index: 2;
+    display: none;
+}
 .gallery-viewing-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.4s infinite;flex-shrink:0}
 
 /* Waterfall inside price block */
@@ -190,18 +273,69 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .detail-name{font-family:var(--font);font-size:24px;font-weight:800;line-height:1.3;letter-spacing:-.4px;color:var(--text)}
 .detail-viewing{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid #bbf7d0;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;color:var(--green)}
 .detail-viewing-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
-.detail-price-block{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+.detail-price {
+    font-family: var(--font);
+    font-size: 36px;
+    font-weight: 800;
+    color: #259c0a;
+    letter-spacing: -1.5px;
+}
 .detail-price-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
 .detail-mrp{text-decoration:line-through;color:var(--text3);font-size:15px}
-.detail-price{font-family:var(--font);font-size:36px;font-weight:800;color:var(--text);letter-spacing:-1.5px}
 .detail-discount-badge{background:var(--accent);color:#fff;padding:4px 11px;border-radius:7px;font-family:var(--font);font-size:13px;font-weight:700}
-.detail-timer{display:inline-flex;align-items:center;gap:7px;background:var(--red-bg);border:1.5px solid #fecaca;border-radius:9px;padding:7px 13px;margin-top:4px}
+.detail-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #ff0000;
+    border: 1.5px solid #fecaca;
+    border-radius: 9px;
+    padding: 7px 13px;
+    margin-top: 4px;
+    color: #fff;
+    width: 200px;
+}
+a#inline-cta-btn {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+}
 .detail-timer-icon{font-size:15px}
-.detail-timer-label{font-size:12px;color:var(--red);font-weight:500}
-.detail-timer-value{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--red)}
+.detail-timer-label {
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+}
+.detail-timer-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
 .detail-cashback-line{font-size:14px;color:var(--text2);margin-top:4px}
 .detail-cashback-line strong{color:var(--green);font-weight:700}
-.cta-btn{display:flex;width:100%;align-items:center;justify-content:center;gap:8px;background:var(--accent);color:#fff;border:none;padding:16px;border-radius:12px;font-family:var(--font);font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;box-shadow:0 4px 16px rgba(92,43,226,.3)}
+.cta-btn {
+    /* display: flex; */
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 7px;
+    border-radius: 12px;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+    box-shadow: 0 4px 16px rgba(92,43,226,.3);
+    float: left;
+    margin-right: 5px;
+    text-align: center;
+}
 .cta-btn:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(92,43,226,.4)}
 .cta-sub{text-align:center;font-size:11px;color:var(--text3);margin-top:5px}
 
@@ -280,7 +414,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   .detail-grid{gap:20px}
   .cb-chips{gap:8px}
   .cb-chip-val{font-size:22px}
-  .card-price{font-size:17px}
+ .card-price {
+    font-family: var(--font);
+    font-size: 20px;
+    font-weight: 800;
+    color: #259c0a;
+    letter-spacing: -.5px;
+}
   .card-body{padding:9px}
 }
 
@@ -288,17 +428,65 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .price-drop-ribbon{position:absolute;top:0;right:0;background:#e53e3e;color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-bottom-left-radius:8px;letter-spacing:.4px;z-index:3;display:flex;align-items:center;gap:3px}
 
 /* WhatsApp share button */
-.share-btn{display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;width:100%}
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all .15s;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    float: left;
+    margin-bottom: 7px;
+}
 .share-btn:hover{background:#1da851;transform:translateY(-1px)}
-.share-btn svg{flex-shrink:0}
-.card-share{position:absolute;bottom:8px;right:8px;background:#25d366;color:#fff;border:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s;z-index:4;font-size:13px}
+.share-btn svg {
+    flex-shrink: 0;
+    position: relative;
+    top: 4px;
+    margin-right: 5px;
+}
+.card-share {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 4;
+    font-size: 13px;
+    display: none;
+}
 .deal-card:hover .card-share{opacity:1}
+div#gthumbs-v {
+    display: none;
+}
 </style>
 </head>
 <body>
 
 <div id="loader">
-  <div id="loader-logo">Deals<span>Hub</span></div>
+  <div id="loader-logo">Cash<span>Karo</span></div>
   <div class="loader-bar"><div class="loader-fill"></div></div>
   <div class="loader-text">Loading today's best deals...</div>
 </div>
@@ -306,7 +494,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 <div id="listing-page" style="display:none">
   <nav id="nav">
     <div id="nav-inner">
-      <a href="#" id="logo" onclick="showListing();return false">Deals<span>Hub</span></a>
+     
       <div id="search-wrap">
         <span id="search-icon">🔍</span>
         <input id="search" type="text" placeholder="Search deals, brands, categories...">
@@ -331,7 +519,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
         <input class="price-input" id="price-min" type="number" placeholder="Min">
         <span class="price-label">—</span>
         <input class="price-input" id="price-max" type="number" placeholder="Max">
-      </div>
+      </div> 
     </div>
   </div>
 
@@ -361,7 +549,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   <div id="detail-nav">
     <div id="detail-nav-inner">
       <button id="back-btn" onclick="showListing()">← Back to deals</button>
-      <a href="#" onclick="showListing();return false" style="font-family:var(--font);font-size:18px;font-weight:800;text-decoration:none;color:var(--text)">Deals<span style="color:var(--accent)">Hub</span></a>
+   
     </div>
   </div>
   <div id="floating-cta">
@@ -393,7 +581,7 @@ const CAT_ICONS = {
 };
 function catIcon(cat){ return CAT_ICONS[cat]||'🏷️'; }
 function catIconPill(cat){
-  return `<span class="cat-icon-pill"><span class="cat-emoji">${catIcon(cat)}</span>${cat}</span>`;
+  return ``;
 }
 
 function buildTrackingUrl(linkurl, productUrl) {
@@ -442,7 +630,7 @@ async function fetchDeals() {
   const res = await fetch(EDGE_LIVE);
   const data = await res.json();
   GLOBAL_TIMER = data.global_timer_hours || 12;
-  IMAGE_ROTATION_MS = data.image_rotation_ms || 2000;
+
   CATEGORY_ORDER = data.category_order || [];
   const mobileCols = parseInt(data.mobile_grid_cols) || 2;
   document.documentElement.style.setProperty('--mobile-cols', mobileCols);
@@ -599,7 +787,7 @@ function makeCard(deal, small) {
       ${disc>0?`<div class="card-discount-badge">${disc}% OFF</div>`:''}
       ${priceDrop?`<div class="price-drop-ribbon">🔥 Price Dropped</div>`:''}
       ${!deal.availability?'<div class="card-oos-overlay">Out of Stock</div>':''}
-      <div class="card-viewing"><span class="card-viewing-dot"></span><span>${vc} viewing</span></div>
+     <div class="card-timer"><span class="card-timer-text">--:--:--</span></div>
       <a class="card-share" href="https://wa.me/?text=${waMsg}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Share on WhatsApp">💬</a>
     </div>
     <div class="card-body">
@@ -610,9 +798,11 @@ function makeCard(deal, small) {
         <span class="card-price">₹${fmt(finalPrice)}</span>
       </div>
       <div class="card-footer">
-        <div class="card-timer"><span class="card-timer-text">--:--:--</span></div>
-        <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${isRewards?'Rewards':'Cashback'}</span>
+          <div class="cta-btn">Quick Buy</div>
+		 <div class="card-viewing"><span class="card-viewing-dot"></span><span>${vc} viewing</span></div>
+        
       </div>
+	 
     </div>`;
 
   const timerEl = card.querySelector('.card-timer-text');
@@ -724,8 +914,10 @@ function renderDetail(deal) {
     <div class="gallery-wrap">
       <div class="gallery-thumbs-vertical" id="gthumbs-v">${thumbsHtml}</div>
       <div class="gallery-main-wrap">
+	  
         <div class="gallery-main" id="gmain">
           ${imgs[0]?`<img id="gimg" src="${proxyImg(imgs[0])}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''">`:'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div>'}
+		  
           <div class="gallery-count" id="gcount">${imgs.length>1?'1/'+imgs.length:''}</div>
           <div class="gallery-viewing-badge"><span class="gallery-viewing-dot"></span>${vc} viewing</div>
         </div>
@@ -749,7 +941,7 @@ function renderDetail(deal) {
   });
   document.getElementById('gmain').addEventListener('mouseenter',()=>galleryHovered=true);
   document.getElementById('gmain').addEventListener('mouseleave',()=>galleryHovered=false);
-  if(imgs.length>1){autoRotate=setInterval(()=>{if(!galleryHovered)goImg((imgIdx+1)%imgs.length);},IMAGE_ROTATION_MS);allIntervals.push(autoRotate);}
+  
 
   // Waterfall calc
   function calcWf(cbVal) {
@@ -821,9 +1013,13 @@ function renderDetail(deal) {
     <div class="detail-retailer-row">
       <span class="detail-retailer">${deal.report_storename||''}</span>
       ${catIconPill(deal.category||'')}
-      <span class="card-type-badge ${isRewards?'badge-rewards':'badge-cashback'}">${storeType}</span>
+      
       ${priceDrop?`<span style="background:#fef2f2;color:#e53e3e;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;border:1px solid #fecaca">🔥 Price Dropped</span>`:''}
     </div>
+	      <div class="detail-timer">
+        <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
+        <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
+      </div>
     <div class="detail-name">${deal.product_name||''}</div>
     ${userTabsHtml}
     <div class="detail-price-block">
@@ -832,10 +1028,7 @@ function renderDetail(deal) {
         <span class="detail-price" id="dp-final">₹${fmt(finalRounded)}</span>
         <span class="detail-discount-badge" id="dp-disc">${disc}% OFF</span>
       </div>
-      <div class="detail-timer">
-        <span class="detail-timer-icon">⏱</span><span class="detail-timer-label">Deal ends in</span>
-        <span class="detail-timer-value" id="detail-timer-val">--:--:--</span>
-      </div>
+
       <div class="wf-inline-toggle" onclick="var b=this.nextElementSibling;b.classList.toggle('open');this.querySelector('.wf-arr').textContent=b.classList.contains('open')?'▴':'▾'">
         <span>💡 How is this price calculated?</span><span class="wf-arr">▾</span>
       </div>
