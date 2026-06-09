@@ -563,6 +563,8 @@ function makeCard(deal,small){
   const finalPrice=Math.round(deal.final_deal_price||0);
   const mrp=Math.round(deal.mrp||0);
   const priceDrop=deal.price_dropped===true;
+  const qty=deal.quantity||1;
+  const qtyBadge=qty>1?` <span style="background:var(--accent-light);color:var(--accent);font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;vertical-align:middle">×${qty}</span>`:'';
 
   // Build swipeable image slider — multiple slides, one visible at a time
   let slidesHtml='';
@@ -582,7 +584,7 @@ function makeCard(deal,small){
     </div>
     <div class="card-body">
       <div class="card-retailer">${deal.report_storename||''}</div>
-      <div class="card-name">${deal.product_name||''}</div>
+      <div class="card-name">${deal.product_name||''}${qtyBadge}</div>
       <div class="card-prices">
         <span class="card-mrp">₹${fmt(mrp)}</span>
         <span class="card-price">₹${fmt(finalPrice)}</span>
@@ -672,11 +674,12 @@ function renderDetail(deal){
   const vc=viewingCount(deal.id);
   const groupid=store.groupid||deal.groupid||'A';
   const isB1=groupid==='B1';
-  let cb;
-  if(isB1)cb=deal.b1_new_cashback??deal.cashback_override??store.cashback??0;
-  else if(groupid!=='A')cb=deal.cashback_override??0;
-  else cb=store.cashback??0;
-  const cbType=store.cashback_type==='percent'?'%':'₹';
+  const qty=deal.quantity||1;
+  let cb,cbRawType;
+  if(isB1){cb=deal.b1_new_cashback??deal.cashback_override??store.cashback??0;cbRawType='percent';}
+  else if(groupid!=='A'){cb=deal.cashback_override??0;cbRawType=deal.cashback_override_type||'percent';}
+  else{cb=store.cashback??0;cbRawType=store.cashback_type||'percent';}
+  const cbType=cbRawType==='percent'?'%':'₹';
   const existingCb=isB1?(deal.b1_existing_cashback??null):null;
 
   // Gallery — swipeable single image with dot indicators and arrows. No auto-rotate.
@@ -728,8 +731,9 @@ function renderDetail(deal){
     allIntervals.push({_cleanup:()=>document.removeEventListener('mouseup',onMouseUp)});
   }
 
-  // Waterfall
-  function calcWf(cbVal){
+  // Waterfall — cbRawType determines percent vs flat ₹ cashback
+  function calcWf(cbVal,cbValType){
+    const t=cbValType||cbRawType;
     const cd=deal.coupon_type==='percent'?(deal.discounted_price*(deal.coupon_discount/100)):(deal.coupon_discount||0);
     const ac=deal.discounted_price-cd;
     const pdAmt=deal.prepaid_type_override==='percent'?ac*((deal.prepaid_discount_override||0)/100):(deal.prepaid_discount_override||0);
@@ -737,23 +741,25 @@ function renderDetail(deal){
     const sf=deal.shipping_fee_override??store.shipping_fee??0;
     const rule=deal.shipping_rule_override??store.shipping_rule??'yes';
     const cbBase=rule==='yes'?ap+sf:ap;
-    const cbAmt=cbType==='%'?cbBase*(cbVal/100):cbVal;
+    const cbAmt=t==='percent'?cbBase*(cbVal/100):cbVal;
     const pAfterCb=cbBase-cbAmt;
     const final=Math.round(rule==='no'?pAfterCb+sf:pAfterCb);
     const discPct=deal.mrp>0?Math.round((deal.mrp-final)/deal.mrp*100):0;
     return{cd,ac,pdAmt,ap,sf,rule,cbAmt,final,discPct,cbVal};
   }
   function buildWfRows(w){
-    let r=`<div class="wf-r s"><span>MRP</span><span class="wv">₹${fmt(deal.mrp)}</span></div><div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
+    const qtyLabel=qty>1?` ×${qty}`:'';
+    let r=`<div class="wf-r s"><span>MRP${qtyLabel}</span><span class="wv">₹${fmt(deal.mrp)}</span></div><div class="wf-r"><span>Discounted price</span><span class="wv">₹${fmt(deal.discounted_price)}</span></div>`;
     if(w.cd>0)r+=`<div class="wf-r d"><span>Coupon (${deal.coupon_code||''})</span><span class="wv">−₹${fmt(w.cd)}</span></div>`;
     if(w.pdAmt>0)r+=`<div class="wf-r d"><span>Prepaid discount</span><span class="wv">−₹${fmt(w.pdAmt)}</span></div>`;
     if(w.sf>0)r+=`<div class="wf-r a"><span>+ Shipping</span><span class="wv">₹${fmt(w.sf)}</span></div>`;
-    r+=`<div class="wf-r d"><span>CashKaro ${w.cbVal}${cbType} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price</span><span class="wv">₹${fmt(w.final)}</span></div><div class="wf-r sv"><span>🎉 You save ${w.discPct}% vs MRP</span></div>`;
+    const cbLabel=cbType==='%'?`${w.cbVal}%`:`₹${fmt(w.cbVal)}`;
+    r+=`<div class="wf-r d"><span>CashKaro ${cbLabel} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price</span><span class="wv">₹${fmt(w.final)}</span></div><div class="wf-r sv"><span>🎉 You save ${w.discPct}% vs MRP</span></div>`;
     return r;
   }
 
-  const wNew=calcWf(cb);
-  const wExisting=isB1&&existingCb!==null?calcWf(existingCb):null;
+  const wNew=calcWf(cb,cbRawType);
+  const wExisting=isB1&&existingCb!==null?calcWf(existingCb,'percent'):null;
   const userTabsHtml=isB1&&wExisting?`<div class="user-tabs" id="user-tabs">
     <button class="user-tab active" id="tab-nu" onclick="switchUserTab('new')">🆕 New to ${deal.report_storename}<br><small style="font-size:10px;opacity:.8">₹${fmt(wNew.final)}</small></button>
     <button class="user-tab" id="tab-eu" onclick="switchUserTab('existing')">🔄 Existing User<br><small style="font-size:10px;opacity:.8">₹${fmt(wExisting.final)}</small></button>
