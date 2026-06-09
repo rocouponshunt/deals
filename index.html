@@ -1,10 +1,3 @@
-To make the `userid` dynamic so it reads from your URL parameter (like `?userid=12342431`) while keeping your default as a fallback, we just need to use JavaScript's `URLSearchParams`.
-
-This will check the URL for a `userid`. If it finds one, it uses it. If it doesn't, it defaults back to `17861557`.
-
-Here is the complete, exact same code you provided earlier, with only the `userid` logic updated at the top of the `<script>` section. You can copy and paste this entire block directly.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -978,5 +971,3 @@ window.addEventListener('hashchange',handleHash);
 </script>
 </body>
 </html>
-
-```
