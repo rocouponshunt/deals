@@ -423,9 +423,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
 let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
 
-// Dynamic userid from URL param — e.g. ?userid=12342431, fallback to default
+// Dynamic userid from URL param — accepts userid, userId, user_id. No fallback — null if not present.
 const urlParams = new URLSearchParams(window.location.search);
-const ACTIVE_USER_ID = urlParams.get('userid') || '';
+const ACTIVE_USER_ID = urlParams.get('userid') || urlParams.get('userId') || urlParams.get('user_id') || null;
 
 const CAT_ICONS = {
   'Electronics':'📱','Fashion':'👗','Beauty':'💄','Home and Kitchen':'🏠',
