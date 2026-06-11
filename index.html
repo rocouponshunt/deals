@@ -163,7 +163,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 
 /* DETAIL PAGE */
 #detail-page{display:none;min-height:100vh;background:var(--bg)}
-#detail-nav{background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100}
+#detail-nav {
+    background: rgba(255,255,255,.96);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: none;
+}
 #detail-nav-inner{max-width:1200px;margin:0 auto;height:62px;display:flex;align-items:center;gap:14px}
 #back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:#fff;padding:7px 13px;border-radius:9px;transition:all .15s;font-family:var(--body)}
 #back-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -351,6 +360,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
     width: 100%;
     display: block;
 }
+@media screen and (min-width: 600px) and (max-width: 3568px)
+{
+.banner{ display: none;}
+}
 </style>
 </head>
 <body>
@@ -360,9 +373,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   <div class="loader-bar"><div class="loader-fill"></div></div>
   <div class="loader-text">Loading today's best deals...</div>
 </div>
-<div class="banner"><img src="https://asset22.ckassets.com/resources/image/staticpage_images/s ott 1-1781166839.png"></div>
+
 <!-- LISTING PAGE -->
 <div id="listing-page" style="display:none">
+<div class="banner"><img src="https://asset22.ckassets.com/resources/image/staticpage_images/s ott 1-1781166839.png"></div>
   <nav id="nav">
     <div id="nav-inner">
       <div id="search-wrap">
