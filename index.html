@@ -704,11 +704,14 @@ function renderDetail(deal){
   const vc=viewingCount(deal.id);
   const groupid=store.groupid||deal.groupid||'A';
   const isB1=groupid==='B1';
-  let cb;
-  if(isB1)cb=deal.b1_new_cashback??deal.cashback_override??store.cashback??0;
-  else if(groupid!=='A')cb=deal.cashback_override??0;
-  else cb=store.cashback??0;
-  const cbType=store.cashback_type==='percent'?'%':'₹';
+  let cb,cbRawType;
+  if(isB1){cb=deal.b1_new_cashback??deal.cashback_override??store.cashback??0;cbRawType='percent';}
+  else if(groupid!=='A'){cb=deal.cashback_override??0;cbRawType=deal.cashback_override_type||'percent';}
+  else{cb=store.cashback??0;cbRawType=store.cashback_type||'percent';}
+  // cbType: symbol for display — ₹X for flat, X% for percent
+  const cbType=cbRawType==='percent'?'%':'₹';
+  // cbDisplay: correctly formatted — "₹65" not "65₹"
+  const cbDisplay=cbRawType==='percent'?`${cb}%`:`₹${cb}`;
   const existingCb=isB1?(deal.b1_existing_cashback??null):null;
 
   // Gallery — swipeable single image with dot indicators and arrows. No auto-rotate.
@@ -772,7 +775,7 @@ function renderDetail(deal){
     const sf=deal.shipping_fee_override??store.shipping_fee??0;
     const rule=deal.shipping_rule_override??store.shipping_rule??'yes';
     const cbBase=rule==='yes'?ap+sf:ap;
-    const cbAmt=cbType==='%'?cbBase*(cbVal/100):cbVal;
+    const cbAmt=cbRawType==='percent'?cbBase*(cbVal/100):cbVal;
     const pAfterCb=cbBase-cbAmt;
     const final=Math.round(rule==='no'?pAfterCb+sf:pAfterCb);
     const discPct=deal.mrp>0?Math.round((deal.mrp-final)/deal.mrp*100):0;
@@ -789,7 +792,7 @@ function renderDetail(deal){
     if(w.cd>0)r+=`<div class="wf-r d"><span>Coupon (${deal.coupon_code||''})</span><span class="wv">−₹${fmt(w.cd)}</span></div>`;
     if(w.pdAmt>0)r+=`<div class="wf-r d"><span>Prepaid discount</span><span class="wv">−₹${fmt(w.pdAmt)}</span></div>`;
     if(w.sf>0)r+=`<div class="wf-r a"><span>+ Shipping</span><span class="wv">₹${fmt(w.sf)}</span></div>`;
-    r+=`<div class="wf-r d"><span>CashKaro ${w.cbVal}${cbType} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price${qtyLabel}</span><span class="wv">₹${fmt(w.final)}</span></div>`;
+    r+=`<div class="wf-r d"><span>CashKaro ${cbRawType==='percent'?w.cbVal+'%':'₹'+w.cbVal} ${isRewards?'Rewards':'Cashback'}</span><span class="wv">−₹${fmt(w.cbAmt)}</span></div><hr class="wf-hr"><div class="wf-r tot"><span>Final deal price${qtyLabel}</span><span class="wv">₹${fmt(w.final)}</span></div>`;
     if(qty>1)r+=`<div class="wf-r" style="color:var(--green);font-weight:600"><span>Per unit</span><span class="wv">₹${fmt(perUnit)}</span></div>`;
     r+=`<div class="wf-r sv"><span>🎉 You save ${w.discPct}% vs MRP</span></div>`;
     return r;
@@ -823,11 +826,11 @@ function renderDetail(deal){
   const dealUrl=`${window.location.origin}${window.location.pathname}#deal/${deal.id}`;
   // WhatsApp message — show per-unit for multi-quantity deals
   const waMsgText=qty>1
-    ?`🔥 Get ${qty}x ${deal.product_name} for just ₹${fmt(finalRounded)} (₹${fmt(perUnitRounded)}/unit, MRP ₹${fmt(Math.round(mrpRounded/qty))} each) — ${disc}% off + ${cb}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`
-    :`🔥 Get ${deal.product_name} for just ₹${fmt(finalRounded)} (MRP ₹${fmt(mrpRounded)}) — ${disc}% off + ${cb}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`;
+    ?`🔥 Get ${qty}x ${deal.product_name} for just ₹${fmt(finalRounded)} (₹${fmt(perUnitRounded)}/unit, MRP ₹${fmt(Math.round(mrpRounded/qty))} each) — ${disc}% off + ${cbDisplay} CashKaro ${cbWord}. Grab it here: ${dealUrl}`
+    :`🔥 Get ${deal.product_name} for just ₹${fmt(finalRounded)} (MRP ₹${fmt(mrpRounded)}) — ${disc}% off + ${cbDisplay} CashKaro ${cbWord}. Grab it here: ${dealUrl}`;
   const waMsg=encodeURIComponent(waMsgText);
   // CTA text
-  const ctaText=qty>1?`Shop Now · ${qty} units · Earn ${cb}${cbType} ${cbWord}`:`Shop Now &amp; Earn ${cb}${cbType} ${cbWord}`;
+  const ctaText=qty>1?`Shop Now · ${qty} units · Earn ${cbDisplay} ${cbWord}`:`Shop Now &amp; Earn ${cbDisplay} ${cbWord}`;
   // Per-unit line for detail page
   const perUnitLine=qty>1?`<div id="dp-per-unit" style="font-size:13px;color:var(--text2);margin-top:6px">📦 <strong>${qty} units</strong> · <span style="color:var(--green);font-weight:700">₹${fmt(perUnitRounded)} per unit</span></div>`:'';
   const qtyBadgeDetail=qty>1?` <span style="background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px">×${qty}</span>`:'';
@@ -894,7 +897,7 @@ function renderDetail(deal){
 
   // Floating CTA
   const fb=document.getElementById('floating-cta-btn');
-  const floatCtaText=qty>1?`🛍 Shop Now · ${qty} units · ₹${fmt(finalRounded)} total`:`🛍 Shop Now & Earn ${cb}${cbType} ${cbWord}`;
+  const floatCtaText=qty>1?`🛍 Shop Now · ${qty} units · ₹${fmt(finalRounded)} total`:`🛍 Shop Now & Earn ${cbDisplay} ${cbWord}`;
   if(fb){fb.href=trackingUrl;fb.textContent=floatCtaText;}
 
   // B1 tab switch — updates price, per-unit, CTA, WA, waterfall
@@ -906,7 +909,7 @@ function renderDetail(deal){
     const newUrl=buildTrackingUrl(deal,store);
     const newFinal=Math.round(w.final);
     const newPerUnit=qty>1?Math.round(newFinal/qty):0;
-    const newCtaText=qty>1?`Shop Now · ${qty} units · Earn ${cbV}${cbType} ${cbWord}`:`Shop Now & Earn ${cbV}${cbType} ${cbWord}`;
+    const newCtaText=qty>1?`Shop Now · ${qty} units · Earn ${cbRawType==='percent'?cbV+'%':'₹'+cbV} ${cbWord}`:`Shop Now & Earn ${cbRawType==='percent'?cbV+'%':'₹'+cbV} ${cbWord}`;
     document.getElementById('dp-final').textContent='₹'+fmt(newFinal);
     document.getElementById('dp-disc').textContent=w.discPct+'% OFF';
     document.getElementById('wf-body').innerHTML=buildWfRows(w);
@@ -916,10 +919,10 @@ function renderDetail(deal){
     document.getElementById('tab-nu')?.querySelector('small')&&(document.getElementById('tab-nu').querySelector('small').textContent='₹'+fmt(Math.round(wNew.final)));
     document.getElementById('tab-eu')?.querySelector('small')&&wExisting&&(document.getElementById('tab-eu').querySelector('small').textContent='₹'+fmt(Math.round(wExisting.final)));
     const ib=document.getElementById('inline-cta-btn');if(ib){ib.href=newUrl;ib.textContent=newCtaText;}
-    if(fb){fb.href=newUrl;fb.textContent=qty>1?`🛍 Shop Now · ${qty} units · ₹${fmt(newFinal)} total`:`🛍 Shop Now & Earn ${cbV}${cbType} ${cbWord}`;}
+    if(fb){fb.href=newUrl;fb.textContent=qty>1?`🛍 Shop Now · ${qty} units · ₹${fmt(newFinal)} total`:`🛍 Shop Now & Earn ${cbRawType==='percent'?cbV+'%':'₹'+cbV} ${cbWord}`;}
     const newWaMsgText=qty>1
-      ?`🔥 Get ${qty}x ${deal.product_name} for just ₹${fmt(newFinal)} (₹${fmt(newPerUnit)}/unit, MRP ₹${fmt(Math.round(mrpRounded/qty))} each) — ${w.discPct}% off + ${cbV}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`
-      :`🔥 Get ${deal.product_name} for just ₹${fmt(newFinal)} (MRP ₹${fmt(mrpRounded)}) — ${w.discPct}% off + ${cbV}${cbType} CashKaro ${cbWord}. Grab it here: ${dealUrl}`;
+      ?`🔥 Get ${qty}x ${deal.product_name} for just ₹${fmt(newFinal)} (₹${fmt(newPerUnit)}/unit, MRP ₹${fmt(Math.round(mrpRounded/qty))} each) — ${w.discPct}% off + ${cbRawType==='percent'?cbV+'%':'₹'+cbV} CashKaro ${cbWord}. Grab it here: ${dealUrl}`
+      :`🔥 Get ${deal.product_name} for just ₹${fmt(newFinal)} (MRP ₹${fmt(mrpRounded)}) — ${w.discPct}% off + ${cbRawType==='percent'?cbV+'%':'₹'+cbV} CashKaro ${cbWord}. Grab it here: ${dealUrl}`;
     document.querySelectorAll('.share-btn').forEach(b=>{b.href=`https://wa.me/?text=${encodeURIComponent(newWaMsgText)}`;});
   };
 
