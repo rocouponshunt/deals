@@ -97,20 +97,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .deal-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;display:flex;flex-direction:column;box-shadow:var(--shadow)}
 .deal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(92,43,226,.2)}
 .deal-card.oos{opacity:.55}
-/* Card image — background-image approach: works on ALL iOS versions, all screen sizes */
+/* Card image — zero-height + padding-bottom square: absolute children fill correctly on all devices */
 .card-img-wrap{
   position:relative;
   width:100%;
+  height:0;
+  padding-bottom:100%;
   overflow:hidden;
   background:var(--bg3);
 }
-/* Square box using padding-top — most reliable cross-browser technique */
-.card-img-wrap::after{
-  content:'';
-  display:block;
-  padding-top:100%;
-}
-/* Slider sits inside the square */
+/* Slider is absolute — fills the padding-bottom square */
 .card-img-slider{
   position:absolute;
   top:0;left:0;
@@ -128,7 +124,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   flex-shrink:0;
   background:#fff;
 }
-/* Image fills the slide using background-image — zero iOS Safari issues */
+/* Background-image fills the slide — works on Android Chrome, iOS Safari, all versions */
 .card-img-bg{
   position:absolute;
   top:0;left:0;
@@ -139,7 +135,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   background-position:center;
   background-color:#fff;
 }
-/* Fallback img tag hidden — bg used instead */
 .card-img{display:none}
 .card-img-placeholder{
   position:absolute;
@@ -208,7 +203,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .skel-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
-.skel-img{aspect-ratio:1;background:var(--bg3)}
+.skel-img{width:100%;height:0;padding-bottom:100%;background:var(--bg3)}
 .skel-body{padding:12px;display:flex;flex-direction:column;gap:8px}
 .skel-line{height:10px;border-radius:4px}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text3);grid-column:1/-1}
@@ -260,11 +255,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   .inline-cta-wrap{display:block}
 }
 
-/* Detail gallery — single image with swipe */
-/* Gallery — detail page — uses background-image same as cards */
+/* Detail gallery — height:0 + padding-bottom square, absolute children */
 .gallery-main{
   position:relative;
   width:100%;
+  height:0;
+  padding-bottom:100%;
   overflow:hidden;
   background:#fff;
   border:1.5px solid var(--border);
@@ -272,11 +268,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   box-shadow:var(--shadow);
   touch-action:pan-y;
   user-select:none;
-}
-.gallery-main::after{
-  content:'';
-  display:block;
-  padding-top:100%;
 }
 .gallery-slider{
   position:absolute;
@@ -306,7 +297,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   background-color:#fff;
   pointer-events:none;
 }
-/* Keep img hidden — bg used */
 .gallery-slide img{display:none}
 /* Dot indicators */
 .gallery-dots{display:flex;justify-content:center;gap:5px;margin-top:10px}
