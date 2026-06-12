@@ -1158,6 +1158,55 @@ window.addEventListener('hashchange',handleHash);
   if(pendingDealId){showDetail(pendingDealId);pendingDealId=null;}
   else handleHash();
 })();
+
+// ── Image reliability fix ─────────────────────────────────────────
+// Background-images have no onerror, so if a request fails (slow
+// network, CDN hiccup, too many parallel loads) the slide stays
+// permanently blank. This block verifies every card/gallery bg image,
+// retries failed ones up to 2x with a cache-buster, and falls back to
+// the 🛍 placeholder only if all retries fail. Purely additive — no
+// existing behaviour changes.
+(function(){
+  const RETRIES=2, RETRY_DELAY=1200;
+  function extractUrl(el){
+    const m=(el.style.backgroundImage||'').match(/url\(["']?(.*?)["']?\)/);
+    return m?m[1]:null;
+  }
+  function verify(el){
+    if(el.dataset.imgChecked)return;
+    el.dataset.imgChecked='1';
+    const url=extractUrl(el);
+    if(!url)return;
+    let attempt=0;
+    function tryLoad(u){
+      const im=new Image();
+      im.onload=()=>{ if(attempt>0)el.style.backgroundImage=`url("${u}")`; };
+      im.onerror=()=>{
+        attempt++;
+        if(attempt<=RETRIES){
+          const bust=url+(url.includes('?')?'&':'?')+'ckr='+Date.now();
+          setTimeout(()=>tryLoad(bust),RETRY_DELAY*attempt);
+        }else{
+          el.style.backgroundImage='none';
+          el.innerHTML='<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#c7c7d1">🛍</div>';
+        }
+      };
+      im.src=u;
+    }
+    tryLoad(url);
+  }
+  function scanAll(root){
+    (root&&root.querySelectorAll?root:document).querySelectorAll('.card-img-bg,.gallery-slide-bg').forEach(verify);
+  }
+  new MutationObserver(muts=>{
+    muts.forEach(m=>m.addedNodes.forEach(n=>{
+      if(n.nodeType!==1)return;
+      if(n.matches&&n.matches('.card-img-bg,.gallery-slide-bg'))verify(n);
+      if(n.querySelectorAll)scanAll(n);
+    }));
+  }).observe(document.body,{childList:true,subtree:true});
+  scanAll(document);
+})();
 </script>
 
 </body>
