@@ -619,12 +619,25 @@ let allIntervals = [];
 // ── Helpers ──────────────────────────────────────────────────────
 const fmt = n => Number(n||0).toLocaleString('en-IN');
 function parseArr(v){if(!v)return[];if(Array.isArray(v))return v;try{const p=JSON.parse(v);return Array.isArray(p)?p:[];}catch(e){return[];}}
+// Myntra CDN blocks hotlinking inside app WebViews (referer check).
+// Route only myntassets.com images through images.weserv.nl, which
+// fetches them server-side with browser headers. All other retailers
+// load directly, exactly as before.
+const PROXY_HOSTS=['myntassets.com'];
+function fixImgUrl(u){
+  try{
+    const h=new URL(u).hostname;
+    if(PROXY_HOSTS.some(d=>h===d||h.endsWith('.'+d)))
+      return 'https://images.weserv.nl/?url='+encodeURIComponent(u);
+  }catch(e){}
+  return u;
+}
 function getImages(deal){
   const urls=parseArr(deal.image_urls);
   const order=parseArr(deal.image_order);
   const hidden=parseArr(deal.hidden_images);
   const idx=order.length>0?order:urls.map((_,i)=>i);
-  return idx.filter(i=>!hidden.includes(i)&&urls[i]).map(i=>urls[i]);
+  return idx.filter(i=>!hidden.includes(i)&&urls[i]).map(i=>fixImgUrl(urls[i]));
 }
 function viewingCount(id){let h=0;for(let i=0;i<(id||'').length;i++)h=(h*31+id.charCodeAt(i))&0xfffffff;return 12+(h%180)+Math.floor(Math.random()*6);}
 function getTimeLeft(timerHours,withSecs){
