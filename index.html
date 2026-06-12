@@ -21,8 +21,8 @@
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden}
 
-/* NAV */
-#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px}
+/* NAV — hidden by default, shown only when show_search config is true */
+#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;display:none}
 #nav-inner{max-width:1400px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px}
 #logo{font-family:var(--font);font-size:21px;font-weight:800;letter-spacing:-.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
 #logo span{color:var(--accent)}
@@ -43,9 +43,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .sug-badge{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0}
 
 /* TOP FILTER BAR */
-#topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:62px;z-index:90}
-#topbar-inner{max-width:1400px;margin:0 auto;height:48px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none}
+#topbar{background:#fff;border-bottom:1px solid var(--border);padding:0;position:sticky;top:0;z-index:90}
+#topbar-inner{max-width:1400px;margin:0 auto;height:46px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none;padding:0 16px;border-bottom:1px solid var(--border)}
 #topbar-inner::-webkit-scrollbar{display:none}
+/* Sort bar — below category pills */
+#sort-bar{max-width:1400px;margin:0 auto;height:38px;display:flex;align-items:center;gap:10px;padding:0 16px}
+.sort-label{font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0}
 .cat-pill{flex-shrink:0;background:transparent;border:1.5px solid var(--border);color:var(--text2);padding:4px 14px;border-radius:20px;cursor:pointer;font-family:var(--body);font-size:12px;font-weight:500;transition:all .15s;white-space:nowrap}
 .cat-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -93,11 +96,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .deal-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;display:flex;flex-direction:column;box-shadow:var(--shadow)}
 .deal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(92,43,226,.2)}
 .deal-card.oos{opacity:.55}
-.card-img-wrap{position:relative;aspect-ratio:1;background:var(--bg3);overflow:hidden;width:100%}
+.card-img-wrap{position:relative;aspect-ratio:1;background:var(--bg3);overflow:hidden}
 /* Swipeable single image */
-.card-img-slider{display:flex;width:100%;height:100%;transition:transform .35s ease;will-change:transform}
-.card-img-slide{min-width:100%;width:100%;height:100%;flex-shrink:0;overflow:hidden}
-.card-img{width:100%;height:100%;object-fit:contain;padding:8px;background:#fff;display:block;max-width:100%;box-sizing:border-box}
+.card-img-slider{display:flex;height:100%;transition:transform .35s ease;will-change:transform}
+.card-img-slide{min-width:100%;height:100%;flex-shrink:0}
+.card-img{width:100%;height:100%;object-fit:contain;padding:10px;background:#fff;display:block}
 .card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text3);background:var(--bg3)}
 .card-discount-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:2}
 .card-oos-overlay{position:absolute;inset:0;background:rgba(245,245,247,.8);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2)}
@@ -210,7 +213,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .gallery-main{aspect-ratio:1;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;box-shadow:var(--shadow);touch-action:pan-y;user-select:none}
 .gallery-slider{display:flex;height:100%;transition:transform .35s ease;will-change:transform}
 .gallery-slide{min-width:100%;height:100%;flex-shrink:0}
-.gallery-slide img{width:100%;height:100%;object-fit:contain;padding:14px;background:#fff;display:block;pointer-events:none;max-width:100%;box-sizing:border-box;-webkit-touch-callout:none}
+.gallery-slide img{width:100%;height:100%;object-fit:contain;padding:18px;background:#fff;display:block;pointer-events:none}
 /* Dot indicators */
 .gallery-dots{display:flex;justify-content:center;gap:5px;margin-top:10px}
 .gallery-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);transition:background .2s,transform .2s;cursor:pointer}
@@ -352,15 +355,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
   .cb-chip-val{font-size:22px}
   .card-price{font-size:20px}
   .card-body{padding:9px}
-  /* Image fixes for mobile — iPhone 16 Pro and similar */
-  .card-img-wrap{aspect-ratio:1;width:100%;max-width:100%;overflow:hidden}
-  .card-img-slider{width:100%;height:100%}
-  .card-img-slide{min-width:100%;width:100%;height:100%}
-  .card-img{padding:6px;width:100%;height:100%;object-fit:contain}
-  .gallery-main{aspect-ratio:1;width:100%;max-width:100%;overflow:hidden}
-  .gallery-slider{width:100%;height:100%}
-  .gallery-slide{min-width:100%;width:100%;height:100%}
-  .gallery-slide img{padding:10px;width:100%;height:100%;object-fit:contain}
 }
 .inline-cta-wrap a {
     float: left;
@@ -415,15 +409,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
     </div>
   </nav>
   <div id="topbar">
+    <!-- Row 1: Category pills -->
     <div id="topbar-inner" class="tab">
       <button class="cat-pill active" data-cat="all">All Deals</button>
       <div class="filter-sep"></div>
-      <select class="tb-select" id="sort-select" title="Sort">
-        <option value="order">⭐ Featured</option>
-        <option value="discount">🔥 Biggest Discount</option>
-        <option value="price_asc">💰 Lowest Price</option>
-        <option value="price_desc">⬆ Highest Price</option>
-        <option value="newest">🆕 Newest First</option>
+    </div>
+    <!-- Row 2: Sort By -->
+    <div id="sort-bar">
+      <span class="sort-label">Sort By</span>
+      <select class="tb-select" id="sort-select" title="Sort By">
+        <option value="order">Featured</option>
+        <option value="discount">Biggest Discount</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="newest">Newly Added</option>
       </select>
     </div>
   </div>
@@ -467,8 +466,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 <script>
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
 let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
-let CTA_LABEL = 'Quick Buy';          // configurable from Lovable Settings tab
-let SIMILAR_DEALS_LABEL = 'Similar Deals'; // configurable from Lovable Settings tab
+let CTA_LABEL = 'Quick Buy';
+let SIMILAR_DEALS_LABEL = 'Similar Deals';
+let SHOW_SEARCH = false;       // controlled from Lovable Settings tab
+let BANNER_IMAGE_URL = '';     // controlled from Lovable Settings tab
 
 // Dynamic userid from URL param — accepts userid, userId, user_id. No fallback — null if not present.
 const urlParams = new URLSearchParams(window.location.search);
@@ -517,7 +518,6 @@ function getTimeLeft(timerHours,withSecs){
 
 // ── Fetch — no cache, always fresh ──────────────────────────────
 async function fetchDeals(){
-  // cache:no-store ensures live deals show immediately after publishing in Lovable
   const res = await fetch(EDGE_LIVE, {cache:'no-store'});
   const data = await res.json();
   GLOBAL_TIMER = data.global_timer_hours || 12;
@@ -525,8 +525,16 @@ async function fetchDeals(){
   CATEGORY_ORDER = data.category_order || [];
   const mobileCols = parseInt(data.mobile_grid_cols) || 2;
   document.documentElement.style.setProperty('--mobile-cols', mobileCols);
+  // Settings tab config
   if(data.cta_label) CTA_LABEL = data.cta_label;
   if(data.similar_deals_label) SIMILAR_DEALS_LABEL = data.similar_deals_label;
+  SHOW_SEARCH = data.show_search === true || data.show_search === 'true';
+  if(data.banner_image_url) BANNER_IMAGE_URL = data.banner_image_url;
+  // Apply search visibility
+  document.getElementById('nav').style.display = SHOW_SEARCH ? 'block' : 'none';
+  // Apply banner image if set
+  const bannerEl = document.querySelector('.banner img');
+  if(bannerEl && BANNER_IMAGE_URL) bannerEl.src = BANNER_IMAGE_URL;
   ALL_DEALS = (data.deals||[])
     .filter(d => d.status==='live' && d.hidden!==true)
     .map(d => ({
@@ -720,6 +728,28 @@ function showSuggestions(q){
 }
 document.getElementById('sort-select').onchange=function(){activeSort=this.value;renderDeals();};
 document.querySelector('.cat-pill[data-cat="all"]').onclick=()=>setCat('all');
+
+// ── Category swipe — swipe left/right on topbar to change category ──
+(function(){
+  const tb=document.getElementById('topbar-inner');
+  if(!tb)return;
+  let swipeStartX=0,swipeStartY=0,swiping=false;
+  tb.addEventListener('touchstart',e=>{swipeStartX=e.touches[0].clientX;swipeStartY=e.touches[0].clientY;swiping=true;},{passive:true});
+  tb.addEventListener('touchend',e=>{
+    if(!swiping)return;swiping=false;
+    const dx=swipeStartX-e.changedTouches[0].clientX;
+    const dy=Math.abs(swipeStartY-e.changedTouches[0].clientY);
+    if(Math.abs(dx)<50||dy>40)return; // not horizontal swipe
+    // Get ordered category list
+    const pills=[...document.querySelectorAll('.cat-pill')];
+    const cats=pills.map(p=>p.dataset.cat);
+    const curIdx=cats.indexOf(activeCat);
+    let nextIdx;
+    if(dx>0)nextIdx=Math.min(curIdx+1,cats.length-1); // swipe left → next
+    else nextIdx=Math.max(curIdx-1,0);                  // swipe right → prev
+    if(nextIdx!==curIdx)setCat(cats[nextIdx]);
+  },{passive:true});
+})();
 
 // ── Detail page ──────────────────────────────────────────────────
 function showDetail(dealId){
@@ -924,7 +954,7 @@ function renderDetail(deal){
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
        
       </a>
-      <div class="cta-sub" style="display:none"></div>
+      <div class="cta-sub">Cashback tracked via CashKaro. Must shop through this link.</div>
     </div>
     <div class="tabs-wrap">
       <div class="tab-list">
