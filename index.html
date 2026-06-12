@@ -46,7 +46,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 #topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:62px;z-index:90}
 #topbar-inner{max-width:1400px;margin:0 auto;height:48px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none;padding:0 4px}
 #topbar-inner::-webkit-scrollbar{display:none}
-/* Sort + Brand filter bar below category pills */
 #sort-bar{background:#fff;border-bottom:1px solid var(--border);padding:0 16px}
 #sort-bar-inner{max-width:1400px;margin:0 auto;height:42px;display:flex;align-items:center;gap:10px}
 .sort-label{font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap;flex-shrink:0}
@@ -98,15 +97,62 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .deal-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;position:relative;display:flex;flex-direction:column;box-shadow:var(--shadow)}
 .deal-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(92,43,226,.2)}
 .deal-card.oos{opacity:.55}
-.card-img-wrap{position:relative;width:100%;overflow:hidden;background:var(--bg3)}
-/* Square aspect ratio — works on all iOS Safari versions including iPhone 13 */
-.card-img-wrap::before{content:'';display:block;padding-top:100%}
-.card-img-wrap > *{position:absolute;top:0;left:0;width:100%;height:100%}
-/* Swipeable single image */
-.card-img-slider{display:flex;position:absolute;top:0;left:0;width:100%;height:100%;transition:transform .35s ease;will-change:transform}
-.card-img-slide{min-width:100%;width:100%;height:100%;flex-shrink:0;overflow:hidden;position:relative}
-.card-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;padding:8px;background:#fff;display:block;box-sizing:border-box}
-.card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text3);background:var(--bg3)}
+/* Card image — background-image approach: works on ALL iOS versions, all screen sizes */
+.card-img-wrap{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  background:var(--bg3);
+}
+/* Square box using padding-top — most reliable cross-browser technique */
+.card-img-wrap::after{
+  content:'';
+  display:block;
+  padding-top:100%;
+}
+/* Slider sits inside the square */
+.card-img-slider{
+  position:absolute;
+  top:0;left:0;
+  display:flex;
+  width:100%;
+  height:100%;
+  transition:transform .35s ease;
+  will-change:transform;
+}
+.card-img-slide{
+  position:relative;
+  min-width:100%;
+  width:100%;
+  height:100%;
+  flex-shrink:0;
+  background:#fff;
+}
+/* Image fills the slide using background-image — zero iOS Safari issues */
+.card-img-bg{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-color:#fff;
+}
+/* Fallback img tag hidden — bg used instead */
+.card-img{display:none}
+.card-img-placeholder{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  color:var(--text3);
+  background:var(--bg3);
+}
 .card-discount-badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:2}
 .card-oos-overlay{position:absolute;inset:0;background:rgba(245,245,247,.8);display:flex;align-items:center;justify-content:center;font-family:var(--font);font-size:13px;font-weight:700;color:var(--text2)}
 .card-timer{display:flex;gap:4px;background:#e53e3e;border-radius:5px;padding:4px 7px;position:absolute;bottom:0;left:0}
@@ -215,11 +261,53 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 }
 
 /* Detail gallery — single image with swipe */
-.gallery-main{width:100%;overflow:hidden;position:relative;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);touch-action:pan-y;user-select:none}
-.gallery-main::before{content:'';display:block;padding-top:100%}
-.gallery-slider{display:flex;position:absolute;top:0;left:0;width:100%;height:100%;transition:transform .35s ease;will-change:transform}
-.gallery-slide{min-width:100%;width:100%;height:100%;flex-shrink:0;overflow:hidden;position:relative}
-.gallery-slide img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;padding:14px;background:#fff;display:block;pointer-events:none;box-sizing:border-box;-webkit-touch-callout:none}
+/* Gallery — detail page — uses background-image same as cards */
+.gallery-main{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  touch-action:pan-y;
+  user-select:none;
+}
+.gallery-main::after{
+  content:'';
+  display:block;
+  padding-top:100%;
+}
+.gallery-slider{
+  position:absolute;
+  top:0;left:0;
+  display:flex;
+  width:100%;
+  height:100%;
+  transition:transform .35s ease;
+  will-change:transform;
+}
+.gallery-slide{
+  position:relative;
+  min-width:100%;
+  width:100%;
+  height:100%;
+  flex-shrink:0;
+  background:#fff;
+}
+.gallery-slide-bg{
+  position:absolute;
+  top:0;left:0;
+  width:100%;
+  height:100%;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-color:#fff;
+  pointer-events:none;
+}
+/* Keep img hidden — bg used */
+.gallery-slide img{display:none}
 /* Dot indicators */
 .gallery-dots{display:flex;justify-content:center;gap:5px;margin-top:10px}
 .gallery-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);transition:background .2s,transform .2s;cursor:pointer}
@@ -501,7 +589,7 @@ function buildTrackingUrl(deal, store) {
 
 let activeCat='all', activeSort='order';
 let selectedBrands = new Set();
-let activeBrandFilter = ''; // brand filter dropdown selection
+let activeBrandFilter='';
 let priceMin=null, priceMax=null, searchQuery='';
 let allIntervals = [];
 
@@ -576,28 +664,20 @@ function clearBrands(){selectedBrands.clear();document.getElementById('clear-bra
 function setCat(cat){
   activeCat=cat;
   document.querySelectorAll('.cat-pill').forEach(p=>p.classList.toggle('active',p.dataset.cat===cat));
-  // Reset brand filter when category changes
+  // Reset brand dropdown when category changes
   const bfs=document.getElementById('brand-filter-select');
   if(bfs){bfs.value='';activeBrandFilter='';}
   populateBrandDropdown();
   renderDeals();
 }
-
-// Populate brand dropdown based on current category
 function populateBrandDropdown(){
   const sel=document.getElementById('brand-filter-select');
   if(!sel)return;
-  const currentVal=sel.value;
-  // Get brands that have deals in the active category
-  const filteredDeals=activeCat==='all'?ALL_DEALS:ALL_DEALS.filter(d=>d.category===activeCat);
-  const brands=[...new Set(filteredDeals.map(d=>d.report_storename).filter(Boolean))].sort();
+  const cur=sel.value;
+  const filtered=activeCat==='all'?ALL_DEALS:ALL_DEALS.filter(d=>d.category===activeCat);
+  const brands=[...new Set(filtered.map(d=>d.report_storename).filter(Boolean))].sort();
   sel.innerHTML='<option value="">All Brands</option>';
-  brands.forEach(b=>{
-    const opt=document.createElement('option');
-    opt.value=b;opt.textContent=b;
-    if(b===currentVal)opt.selected=true;
-    sel.appendChild(opt);
-  });
+  brands.forEach(b=>{const o=document.createElement('option');o.value=b;o.textContent=b;if(b===cur)o.selected=true;sel.appendChild(o);});
 }
 
 // ── Filter + sort ────────────────────────────────────────────────
@@ -679,7 +759,8 @@ function makeCard(deal,small){
   // Build swipeable image slider — multiple slides, one visible at a time
   let slidesHtml='';
   if(imgs.length>0){
-    slidesHtml=imgs.map(url=>`<div class="card-img-slide"><img class="card-img" src="${url}" loading="lazy" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder>🛍</div>'"></div>`).join('');
+    // Use background-image divs — works on ALL iOS versions, zero rendering issues
+    slidesHtml=imgs.map(url=>`<div class="card-img-slide"><div class="card-img-bg" style="background-image:url('${url.replace(/'/g,"%27")}')"></div></div>`).join('');
   } else {
     slidesHtml='<div class="card-img-slide"><div class="card-img-placeholder">🛍</div></div>';
   }
@@ -802,8 +883,8 @@ function renderDetail(deal){
   let gIdx=0,gStartX=0,gDragging=false;
   window.gIdx=0; // global so arrow onclick strings can access it
   const slidesHtml=imgs.length>0
-    ?imgs.map(url=>`<div class="gallery-slide"><img src="${url}" alt="${(deal.product_name||'').replace(/"/g,'')}" onerror="this.src=''"></div>`).join('')
-    :'<div class="gallery-slide"><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div></div>';
+    ?imgs.map(url=>`<div class="gallery-slide"><div class="gallery-slide-bg" style="background-image:url('${url.replace(/'/g,"%27")}')"></div></div>`).join('')
+    :'<div class="gallery-slide"><div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px">🛍</div></div>';
   const dotsHtml=imgs.length>1?imgs.map((_,i)=>`<div class="gallery-dot${i===0?' active':''}" onclick="gGoTo(${i})"></div>`).join(''):'';
   // Arrows use window.gIdx so they always read current value
   const arrowsHtml=imgs.length>1?`<button class="gallery-arrow prev" onclick="gGoTo(window.gIdx-1)">&#8249;</button><button class="gallery-arrow next" onclick="gGoTo(window.gIdx+1)">&#8250;</button>`:'';
