@@ -22,7 +22,7 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden}
 
 /* NAV */
-#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px;display:none}
+#nav{display:none;height:0;overflow:hidden;border:none;padding:0;margin:0}
 #nav-inner{max-width:1400px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px}
 #logo{font-family:var(--font);font-size:21px;font-weight:800;letter-spacing:-.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
 #logo span{color:var(--accent)}
@@ -43,7 +43,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 .sug-badge{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0}
 
 /* TOP FILTER BAR */
-#topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:62px;z-index:90}
+#topbar{background:#fff;border-bottom:1px solid var(--border);padding:0;position:sticky;top:0;z-index:90}
 #topbar-inner{max-width:1400px;margin:0 auto;height:48px;display:flex;align-items:center;gap:12px;overflow-x:auto;scrollbar-width:none;padding:0 4px}
 #topbar-inner::-webkit-scrollbar{display:none}
 #sort-bar{background:#fff;border-bottom:1px solid var(--border);padding:0 16px}
@@ -66,7 +66,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 #page-body{max-width:1400px;margin:0 auto;padding:24px 20px 60px;display:flex;gap:24px;align-items:flex-start}
 
 /* LEFT SIDEBAR */
-#sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:124px;max-height:calc(100vh - 140px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+#sidebar{width:var(--sidebar-w);flex-shrink:0;position:sticky;top:90px;max-height:calc(100vh - 100px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 #sidebar::-webkit-scrollbar{width:4px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 .sidebar-section{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
