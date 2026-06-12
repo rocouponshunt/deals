@@ -772,7 +772,7 @@ function makeCard(deal,small){
       </div>
       ${qty>1?`<div style="font-size:11px;color:var(--text2);margin-top:2px">For ${qty} units · <strong style="color:var(--green)">₹${fmt(perUnit)}/unit</strong></div>`:''}
       <div class="card-footer">
-        <button class="card-quick-buy" onclick="event.stopPropagation();showDetail('${deal.id}')">Quick Buy</button>
+        <button class="card-quick-buy" onclick="event.stopPropagation();showDetail('${deal.id}')">View Deal</button>
         <div class="card-viewing"><span class="card-viewing-dot"></span><span>${vc} viewing</span></div>
       </div>
     </div>`;
