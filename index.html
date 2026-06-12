@@ -1167,28 +1167,63 @@ window.addEventListener('hashchange',handleHash);
 // the 🛍 placeholder only if all retries fail. Purely additive — no
 // existing behaviour changes.
 (function(){
-  const RETRIES=2, RETRY_DELAY=1200;
+  const RETRIES=2;          // retries for non-first slides
+  const FIRST_RETRIES=6;    // first image is critical — retry much harder
+  const RETRY_DELAY=1000;
   function extractUrl(el){
     const m=(el.style.backgroundImage||'').match(/url\(["']?(.*?)["']?\)/);
     return m?m[1]:null;
+  }
+  function bust(u){return u+(u.includes('?')?'&':'?')+'ckr='+Date.now();}
+  function setBg(el,u){el.style.backgroundImage=`url("${u}")`;}
+  // Is this element the FIRST slide of its slider/gallery?
+  function isFirstSlide(el){
+    const slide=el.closest('.card-img-slide,.gallery-slide');
+    return slide&&slide.parentElement&&slide.parentElement.firstElementChild===slide;
+  }
+  // Get the original URL of the first slide in the same slider
+  function firstSlideUrl(el){
+    const slider=el.closest('.card-img-slider,.gallery-slider');
+    if(!slider)return null;
+    const firstBg=slider.querySelector('.card-img-bg,.gallery-slide-bg');
+    return firstBg?(firstBg.dataset.origUrl||extractUrl(firstBg)):null;
   }
   function verify(el){
     if(el.dataset.imgChecked)return;
     el.dataset.imgChecked='1';
     const url=extractUrl(el);
     if(!url)return;
+    el.dataset.origUrl=url;
+    const first=isFirstSlide(el);
+    const maxRetries=first?FIRST_RETRIES:RETRIES;
     let attempt=0;
     function tryLoad(u){
       const im=new Image();
-      im.onload=()=>{ if(attempt>0)el.style.backgroundImage=`url("${u}")`; };
+      im.onload=()=>{ if(attempt>0)setBg(el,u); };
       im.onerror=()=>{
         attempt++;
-        if(attempt<=RETRIES){
-          const bust=url+(url.includes('?')?'&':'?')+'ckr='+Date.now();
-          setTimeout(()=>tryLoad(bust),RETRY_DELAY*attempt);
+        if(attempt<=maxRetries){
+          // growing backoff so retries land after the network frees up
+          setTimeout(()=>tryLoad(bust(url)),RETRY_DELAY*attempt);
+        }else if(!first){
+          // Non-first slide exhausted — fall back to the deal's FIRST image
+          // so the user always sees what the product is
+          const fu=firstSlideUrl(el);
+          if(fu&&fu!==url){
+            const fim=new Image();
+            fim.onload=()=>setBg(el,fu);
+            fim.onerror=()=>{const f2=bust(fu);const fim2=new Image();fim2.onload=()=>setBg(el,f2);fim2.src=f2;};
+            fim.src=fu;
+          }
         }else{
-          el.style.backgroundImage='none';
-          el.innerHTML='<div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#c7c7d1">🛍</div>';
+          // First image still failing after 6 retries (~21s) — keep trying
+          // in the background every 8s. The product image has to show.
+          const loop=setInterval(()=>{
+            const b=bust(url);const im2=new Image();
+            im2.onload=()=>{setBg(el,b);clearInterval(loop);};
+            im2.src=b;
+          },8000);
+          setTimeout(()=>clearInterval(loop),120000); // stop after 2 min
         }
       };
       im.src=u;
