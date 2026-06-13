@@ -645,15 +645,15 @@ let allIntervals = [];
 const fmt = n => Number(n||0).toLocaleString('en-IN');
 function parseArr(v){if(!v)return[];if(Array.isArray(v))return v;try{const p=JSON.parse(v);return Array.isArray(p)?p:[];}catch(e){return[];}}
 // Myntra CDN blocks hotlinking inside app WebViews (referer check).
-// Route only myntassets.com images through images.weserv.nl, which
-// fetches them server-side with browser headers. All other retailers
+// Route only myntassets.com images through wsrv.nl (formerly images.weserv.nl),
+// which fetches them server-side with browser headers. All other retailers
 // load directly, exactly as before.
 const PROXY_HOSTS=['myntassets.com'];
 function fixImgUrl(u){
   try{
     const h=new URL(u).hostname;
     if(PROXY_HOSTS.some(d=>h===d||h.endsWith('.'+d)))
-      return 'https://images.weserv.nl/?url='+encodeURIComponent(u);
+      return 'https://wsrv.nl/?url='+encodeURIComponent(u);
   }catch(e){}
   return u;
 }
