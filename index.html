@@ -22,7 +22,7 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden}
 
 /* NAV */
-#nav{display:none;height:0;overflow:hidden;border:none;padding:0;margin:0}
+#nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 20px}
 #nav-inner{max-width:1400px;margin:0 auto;height:62px;display:flex;align-items:center;gap:16px}
 #logo{font-family:var(--font);font-size:21px;font-weight:800;letter-spacing:-.5px;flex-shrink:0;text-decoration:none;color:var(--text)}
 #logo span{color:var(--accent)}
@@ -533,6 +533,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 <!-- LISTING PAGE -->
 <div id="listing-page" style="display:none">
 <div class="banner"><img src="https://asset22.ckassets.com/resources/image/staticpage_images/60 ott 1-1781263165.png"></div>
+  <div id="nav-wrapper" style="display:none;overflow:hidden;height:0">
   <nav id="nav">
     <div id="nav-inner">
       <div id="search-wrap">
@@ -542,6 +543,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
       </div>
     </div>
   </nav>
+  </div>
   <div id="topbar">
     <div id="topbar-inner" class="tab">
       <button class="cat-pill active" data-cat="all">All Deals</button>
@@ -613,6 +615,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:1
 <script>
 const EDGE_LIVE = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/get-live-deals';
 let ALL_DEALS = [], GLOBAL_TIMER = 12, IMAGE_ROTATION_MS = 2000, CATEGORY_ORDER = [];
+let CTA_LABEL = 'View Deal', SIMILAR_DEALS_LABEL = 'Similar Deals', BANNER_IMAGE_URL = '';
 
 // Dynamic userid from URL param — accepts userid, userId, user_id. No fallback — null if not present.
 const urlParams = new URLSearchParams(window.location.search);
@@ -683,6 +686,20 @@ async function fetchDeals(){
   CATEGORY_ORDER = data.category_order || [];
   const mobileCols = parseInt(data.mobile_grid_cols) || 2;
   document.documentElement.style.setProperty('--mobile-cols', mobileCols);
+  // Settings tab config
+  const showSearch = data.show_search === true || data.show_search === 'true';
+  const navWrapper = document.getElementById('nav-wrapper');
+  const tb = document.getElementById('topbar');
+  if(showSearch){
+    if(navWrapper){navWrapper.style.display='block';navWrapper.style.height='auto';navWrapper.style.overflow='visible';}
+    if(tb)tb.style.top='62px';
+  } else {
+    if(navWrapper){navWrapper.style.display='none';navWrapper.style.height='0';navWrapper.style.overflow='hidden';}
+    if(tb)tb.style.top='0';
+  }
+  if(data.cta_label) CTA_LABEL = data.cta_label;
+  if(data.similar_deals_label) SIMILAR_DEALS_LABEL = data.similar_deals_label;
+  if(data.banner_image_url){BANNER_IMAGE_URL=data.banner_image_url;const b=document.querySelector('.banner img');if(b)b.src=BANNER_IMAGE_URL;}
   ALL_DEALS = (data.deals||[])
     .filter(d => d.status==='live' && d.hidden!==true)
     .map(d => ({
@@ -1162,7 +1179,7 @@ function renderDetail(deal){
   // Similar deals
   const detailInner=document.getElementById('detail-inner');
   detailInner.querySelector('.similar-section')?.remove();
-  const similar=ALL_DEALS.filter(d=>d.id!==deal.id&&d.category===deal.category).slice(0,6);
+  const similar=ALL_DEALS.filter(d=>d.id!==deal.id&&d.category===deal.category);
   if(similar.length>0){
     const sec=document.createElement('div');sec.className='similar-section';
     sec.innerHTML=`<div class="similar-title"><span style="display:inline-block;width:4px;height:20px;background:var(--accent);border-radius:2px"></span>Deals you may like</div><div class="similar-grid" id="sim-grid"></div>`;
