@@ -654,10 +654,13 @@ window.logDealEvent = function (deal, eventType) {
       event_type: eventType,            // 'dealview' or 'exitclick'
       referrer: document.referrer || null
     };
-    var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    // text/plain is CORS-safelisted, so the cross-origin beacon/fetch sends
+    // WITHOUT a preflight. The edge function's req.json() still parses it fine.
+    var body = JSON.stringify(payload);
+    var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
     if (!navigator.sendBeacon || !navigator.sendBeacon(LOG_EVENT_URL, blob)) {
-      fetch(LOG_EVENT_URL, { method: 'POST', body: JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' }, keepalive: true });
+      fetch(LOG_EVENT_URL, { method: 'POST', body: body,
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, keepalive: true });
     }
   } catch (e) {}
 };
