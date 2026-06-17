@@ -638,6 +638,36 @@ function buildTrackingUrl(deal, store) {
     .replace(/\{product_url\}/gi, encodeURIComponent(deal.product_url || ''));
 }
 
+// ── Funnel event logging ─────────────────────────────────────────
+// Logs two events to the Supabase edge function:
+//   dealview  — when a deal detail page opens
+//   exitclick — when the retailer CTA (inline or floating) is clicked
+// userid comes from ACTIVE_USER_ID (captured from the landing URL above).
+const LOG_EVENT_URL = 'https://bdztgellimsbglxiuwcq.supabase.co/functions/v1/log-click';
+window.logDealEvent = function (deal, eventType) {
+  try {
+    if (!deal) return;
+    var payload = {
+      deal_id: deal.id,
+      store_id: deal.store_id || null,
+      userid: ACTIVE_USER_ID || null,
+      event_type: eventType,            // 'dealview' or 'exitclick'
+      referrer: document.referrer || null
+    };
+    var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    if (!navigator.sendBeacon || !navigator.sendBeacon(LOG_EVENT_URL, blob)) {
+      fetch(LOG_EVENT_URL, { method: 'POST', body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }, keepalive: true });
+    }
+  } catch (e) {}
+};
+// Fire exitclick on CTA clicks. Delegated so it survives detail re-renders
+// and never double-binds. window.__ckCurrentDeal is set in showDetail().
+document.addEventListener('click', function (e) {
+  var cta = e.target.closest && e.target.closest('#inline-cta-btn,#floating-cta-btn');
+  if (cta && window.__ckCurrentDeal) window.logDealEvent(window.__ckCurrentDeal, 'exitclick');
+}, true);
+
 let activeCat='all', activeSort='order';
 let selectedBrands = new Set();
 let activeBrandFilter='';
@@ -921,6 +951,8 @@ document.querySelector('.cat-pill[data-cat="all"]').onclick=()=>setCat('all');
 // ── Detail page ──────────────────────────────────────────────────
 function showDetail(dealId){
   const deal=ALL_DEALS.find(d=>d.id===dealId);if(!deal)return;
+  window.__ckCurrentDeal=deal;
+  window.logDealEvent(deal,'dealview');
   window.location.hash='deal/'+dealId;window.scrollTo(0,0);
   renderDetail(deal);
   document.getElementById('listing-page').style.display='none';
